@@ -4,11 +4,15 @@ from .database import engine, get_db
 from sqlalchemy.orm import Session
 from . import models
 from . import schemas
+from . import utils
+
 models.Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()
 
+
+# Posts API
 
 @app.get("/")
 async def root():
@@ -63,11 +67,19 @@ async def update_post(id: int, post_data: schemas.PostCreate, db: Session = Depe
     return post
 
 
-# User API
+# Users API
 
 @app.post("/users", status_code=status.HTTP_201_CREATED, response_model=schemas.User)
 async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+
+    # hash the password
+    user.password = utils.hash(user.password)
     new_user = models.User(**user.model_dump())
+    user = db.query(models.User).filter(
+        models.User.email == new_user.email).first()
+    if user:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,
+                            detail=f"User with email: {new_user.email} already exists")
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -85,7 +97,7 @@ async def get_user(email: str, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == email).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"User with id: {email} is not found")
+                            detail=f"User with email: {email} is not found")
     return user
 
 
@@ -94,7 +106,7 @@ async def delete_user(email: str,  db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == email).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"User with id: {email} is not found")
+                            detail=f"User with email: {email} is not found")
     db.delete(user)
     db.commit()
     return user
@@ -105,7 +117,7 @@ async def update_user(email: str, user_data: schemas.UserCreate, db: Session = D
     user = db.query(models.User).filter(models.User.email == email).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"User with id: {email} is not found")
+                            detail=f"User with email: {email} is not found")
     for field, value in user_data.model_dump().items():
         setattr(user, field, value)
     db.commit()

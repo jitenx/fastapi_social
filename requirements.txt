@@ -2,3 +2,5 @@ fastapi[standard]
 psycopg2-binary
 sqlmodel
 sqlalchemy
+emailvalidator
+passlib[bcrypt]

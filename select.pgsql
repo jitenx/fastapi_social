@@ -1,5 +1,5 @@
-select * from posts;
+select * from users;
 
--- insert into posts(title,content) values('1st Post','This is my 1st post on postgresql DB') RETURNING *
+-- insert into posts(title,content) values('1st Post','This is my 1st post on postgresql DB') RETURNING *;
 
--- DROP TABLE posts
+-- DROP TABLE users;
