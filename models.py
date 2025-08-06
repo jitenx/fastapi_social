@@ -1,20 +1,13 @@
-from sqlmodel import Field, SQLModel, create_engine, Session
-
-SQLMODEL_DATABASE_URL = 'postgres://jitu:jitu@localhost/test'
-
-
-class Posts(SQLModel, table=True):
-    id: int = Field(default=None, primary_key=True, index=True, nullable=False)
-    title: str | None = Field(default=None, nullable=False)
-    content: str | None = Field(default=None, nullable=False)
-    published: bool = Field(default=False, nullable=True)
+from sqlalchemy import TIMESTAMP, Column, Integer, String, Boolean, text
+from sqlalchemy.sql.expression import null
+from .database import Base
 
 
-engine = create_engine(SQLMODEL_DATABASE_URL)
-
-SQLModel.metadata.create_all(engine)
-
-
-def get_session():
-    with Session(engine) as session:
-        yield session
+class Post(Base):
+    __tablename__ = "posts"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    title = Column(String, nullable=False)
+    content = Column(String, nullable=False)
+    published = Column(Boolean, nullable=False, server_default='TRUE')
+    created_at = Column(TIMESTAMP(timezone=True),
+                        nullable=False, server_default=text('now()'))

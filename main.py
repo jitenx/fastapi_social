@@ -1,33 +1,15 @@
-from typing import Annotated
-from sqlmodel import Field, SQLModel, create_engine, Session, select
-from fastapi import Depends, FastAPI, HTTPException, status
+from typing import Any, Optional
+from fastapi import Body, FastAPI, HTTPException, status, Depends
+from pydantic import BaseModel
+from sqlalchemy import TIMESTAMP
+from .database import engine, get_db
+from sqlalchemy.orm import Session
+from . import models
+from . import schemas
+models.Base.metadata.create_all(bind=engine)
+
 
 app = FastAPI()
-
-SQLMODEL_DATABASE_URL = 'postgresql://jitu:jitu@localhost:5432/test'
-
-
-class Post(SQLModel, table=True):
-    id: int = Field(default=None, primary_key=True, index=True, nullable=False)
-    title: str | None = Field(default=None, nullable=False)
-    content: str | None = Field(default=None, nullable=False)
-    published: bool = Field(default=False, nullable=True)
-
-
-engine = create_engine(SQLMODEL_DATABASE_URL)
-
-SQLModel.metadata.create_all(engine)
-
-
-def get_session():
-    with Session(engine) as session:
-        yield session
-
-
-@app.get("/posts", response_model=list[Post])
-def get_posts(skip: int = 0, limit: int = 10, session: Session = Depends(get_session)):
-    post = session.exec(select(Post).offset(skip).limit(limit)).all()
-    return post
 
 
 @app.get("/")
@@ -35,42 +17,49 @@ def root():
     return {"message": "Hello"}
 
 
-@app.post("/createposts", response_model=Post, status_code=status.HTTP_201_CREATED)
-def create_post(post: Post, session: Session = Depends(get_session)):
-    session.add(post)
-    session.commit()
-    session.refresh(post)
-    return post
+@app.get("/posts")
+def get_posts(db: Session = Depends(get_db)):
+    posts = db.query(models.Post).all()
+    return posts
 
 
-@app.get("/posts/{id}", response_model=Post)
-def get_post(id: int, session: Session = Depends(get_session)):
-    post = session.get(Post, id)
-    if post == None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"Post with id: {id} is not found")
-    return post
-
-
-@app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id: int, session: Session = Depends(get_session)):
-    post = session.get(Post, id)
+@app.get("/posts/{id}")
+def get_post(id: int, db: Session = Depends(get_db)):
+    post = db.query(models.Post).filter(models.Post.id == id).first()
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Post with id: {id} is not found")
-    session.delete(post)
-    session.commit()
     return post
 
 
-@app.put("/posts/{id}", response_model=Post, status_code=status.HTTP_200_OK)
-def update_post(id: int, post_data: Post, session: Session = Depends(get_session)):
-    post = session.get(Post, id)
+@app.post("/posts", status_code=status.HTTP_201_CREATED)
+def create_post(post: schemas.Post, db: Session = Depends(get_db)):
+    new_post = models.Post(**post.model_dump())
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
+    return new_post
+
+
+@app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(id: int,  db: Session = Depends(get_db)):
+    post = db.get(models.Post, id)
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Post with id: {id} is not found")
+    db.delete(post)
+    db.commit()
+    return post
+
+
+@app.put("/posts/{id}", response_model=schemas.Post, status_code=status.HTTP_200_OK)
+def update_post(id: int, post_data: schemas.Post, db: Session = Depends(get_db)):
+    post = db.get(models.Post, id)
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Post with id: {id} is not found")
     for field, value in post_data.model_dump().items():
         setattr(post, field, value)
-    session.commit()
-    session.refresh(post)
+    db.commit()
+    db.refresh(post)
     return post
