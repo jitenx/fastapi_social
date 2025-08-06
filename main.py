@@ -63,8 +63,10 @@ async def update_post(id: int, post_data: schemas.PostCreate, db: Session = Depe
     return post
 
 
+# User API
+
 @app.post("/users", status_code=status.HTTP_201_CREATED, response_model=schemas.User)
-async def create_user(user: schemas.UserBase, db: Session = Depends(get_db)):
+async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     new_user = models.User(**user.model_dump())
     db.add(new_user)
     db.commit()
@@ -83,5 +85,29 @@ async def get_user(email: str, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == email).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"Post with id: {id} is not found")
+                            detail=f"User with id: {email} is not found")
+    return user
+
+
+@app.delete("/users/{email}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user(email: str,  db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"User with id: {email} is not found")
+    db.delete(user)
+    db.commit()
+    return user
+
+
+@app.put("/users/{email}", response_model=schemas.User, status_code=status.HTTP_200_OK)
+async def update_user(email: str, user_data: schemas.UserCreate, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"User with id: {email} is not found")
+    for field, value in user_data.model_dump().items():
+        setattr(user, field, value)
+    db.commit()
+    db.refresh(user)
     return user

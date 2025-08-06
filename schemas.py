@@ -17,7 +17,7 @@ class Post(PostBase):
     created_at: datetime
 
 
-class UserBase(BaseModel):
+class UserCreate(BaseModel):
     email: str
     password: str
 
