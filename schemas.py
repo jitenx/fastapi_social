@@ -1,19 +1,17 @@
+from datetime import datetime
 from pydantic import BaseModel
 
 
-class Post(BaseModel):
+class PostBase(BaseModel):
     title: str
     content: str
     published: bool = True
 
 
-class CreatePost(BaseModel):
-    title: str
-    content: str
-    published: bool = True
+class PostCreate(PostBase):
+    pass
 
 
-class UpdatePost(BaseModel):
-    title: str
-    content: str
-    published: bool
+class Post(PostBase):
+    id: int
+    created_at: datetime
