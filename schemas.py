@@ -15,3 +15,12 @@ class PostCreate(PostBase):
 class Post(PostBase):
     id: int
     created_at: datetime
+
+
+class UserBase(BaseModel):
+    email: str
+    password: str
+
+
+class User(BaseModel):
+    email: str
