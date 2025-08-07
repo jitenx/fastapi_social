@@ -1,8 +1,0 @@
-[
-  { "title": "Python", "content": "Python is an OOP language", "id": 1 },
-  {
-    "title": "Java",
-    "content": "Java is also an OOP language",
-    "id": 2
-  }
-]
