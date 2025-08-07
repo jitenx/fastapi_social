@@ -1,6 +1,6 @@
 from sqlalchemy import TIMESTAMP, Column, Integer, String, Boolean, text
 from sqlalchemy.sql.expression import null
-from .database import Base
+from ..database.database import Base
 
 
 class Post(Base):
