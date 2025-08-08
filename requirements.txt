@@ -4,3 +4,4 @@ sqlmodel
 sqlalchemy
 emailvalidator
 passlib[bcrypt]
+python-jose[cryptography]

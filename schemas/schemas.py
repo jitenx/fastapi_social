@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 
@@ -26,3 +27,17 @@ class User(BaseModel):
     email: EmailStr
     id: int
     created_at: datetime
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    bearer: str
+
+
+class TokenData(BaseModel):
+    id: Optional[str] = None
