@@ -36,7 +36,7 @@ class UserLogin(BaseModel):
 
 class Token(BaseModel):
     access_token: str
-    bearer: str
+    token_type: str
 
 
 class TokenData(BaseModel):

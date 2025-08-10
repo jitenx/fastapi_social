@@ -1,6 +1,8 @@
 from fastapi import HTTPException, status, Depends, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+
+from ..schemas import schemas
 from ..database.database import get_db
 from ..models import models
 from ..utils.utils import verify_password
@@ -11,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.post("/login", status_code=status.HTTP_201_CREATED)
+@router.post("/login", status_code=status.HTTP_201_CREATED, response_model=schemas.Token)
 async def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(models.User).filter(
         models.User.email == user_credentials.username).first()
