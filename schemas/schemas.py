@@ -47,4 +47,4 @@ class TokenData(BaseModel):
 
 class Vote(BaseModel):
     post_id: int
-    vote: bool
+    dir: bool
