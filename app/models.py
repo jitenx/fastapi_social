@@ -1,6 +1,6 @@
 from sqlalchemy import TIMESTAMP, Column, Integer, String, Boolean, text, ForeignKey
 from sqlalchemy.orm import relationship
-from ..database.database import Base
+from .database import Base
 
 
 class Post(Base):

@@ -3,13 +3,10 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
-from ..utils.config import settings
-from ..models import models
-
-from ..database.database import get_db
-
-
-from ..schemas import schemas
+from .config import settings
+from .models import User
+from .database import get_db
+from .schemas import TokenData
 
 SECRET_KEY = settings.secret_key
 ALGORITHM = settings.algorithm
@@ -31,7 +28,7 @@ def verify_access_token(token: str, credentials_exception):
         email = payload.get("user_email")
         if not email:
             raise credentials_exception
-        token_data = schemas.TokenData(id=email)
+        token_data = TokenData(id=email)
     except JWTError:
         raise credentials_exception
     return token_data
@@ -43,6 +40,6 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 
     token = verify_access_token(token, credentials_exception)  # type: ignore
 
-    user = db.query(models.User).filter(
-        models.User.email == token.id).first()  # type: ignore
+    user = db.query(User).filter(
+        User.email == token.id).first()  # type: ignore
     return user

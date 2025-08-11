@@ -2,11 +2,11 @@ from typing import List, Optional
 from fastapi import HTTPException, status, Depends, APIRouter
 from sqlalchemy import func
 
-from ..utils import oauth2
-from ..database.database import get_db
+from ..app import oauth2
+from ..app.database import get_db
 from sqlalchemy.orm import Session
-from ..models import models
-from ..schemas import schemas
+from ..app import models
+from ..app import schemas
 
 router = APIRouter(
     prefix="/posts",
