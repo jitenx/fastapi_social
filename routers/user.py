@@ -55,6 +55,17 @@ async def delete_user(email: str,  db: Session = Depends(get_db)):
     return user
 
 
+@router.delete("/id/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user_by_id(id: int,  db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"User with id: {id} is not found")
+    db.delete(user)
+    db.commit()
+    return user
+
+
 @router.put("{email}", response_model=schemas.User, status_code=status.HTTP_200_OK)
 async def update_user(email: str, user_data: schemas.UserCreate, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == email).first()
