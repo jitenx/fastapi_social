@@ -36,6 +36,11 @@ class Post(PostBase):
     owner: User
 
 
+class PostVoted(BaseModel):
+    Post: Post
+    votes: int
+
+
 class Token(BaseModel):
     access_token: str
     token_type: str
