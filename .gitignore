@@ -10,3 +10,4 @@ wheels/
 .venv
 olds/
 .env
+tests/
