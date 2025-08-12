@@ -1,6 +1,6 @@
 from sqlalchemy import TIMESTAMP, Column, Integer, String, Boolean, text, ForeignKey
 from sqlalchemy.orm import relationship
-from .database import Base
+from ..database.database import Base
 
 
 class Post(Base):
@@ -20,6 +20,8 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     email = Column(String, nullable=False, unique=True)
+    phone_number = Column(String, nullable=False, unique=True)
+    address = Column(String, nullable=True)
     password = Column(String, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True),
                         nullable=False, server_default=text('now()'))

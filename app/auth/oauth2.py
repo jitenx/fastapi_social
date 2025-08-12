@@ -3,10 +3,10 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
-from .config import settings
-from .models import User
-from .database import get_db
-from .schemas import TokenData
+from ..config.config import settings
+from ..models.models import User
+from ..database.database import get_db
+from ..schemas.schemas import TokenData
 
 SECRET_KEY = settings.secret_key
 ALGORITHM = settings.algorithm

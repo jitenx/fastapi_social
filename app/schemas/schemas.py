@@ -6,6 +6,8 @@ from pydantic import BaseModel, EmailStr, conint
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
+    phone_number: str
+    address: str
 
 
 class User(BaseModel):
