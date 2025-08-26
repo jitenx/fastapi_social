@@ -6,24 +6,31 @@ from app.utils.utils import verify_password
 
 from app.auth import oauth2
 from app.database.database import get_db
-from sqlalchemy.orm import Session
 from app.models import models
 from app.schemas import schemas
 
-router = APIRouter(
-    tags=["Authentication"]
+router = APIRouter(tags=["Authentication"])
+
+
+@router.post(
+    "/login", status_code=status.HTTP_201_CREATED, response_model=schemas.Token
 )
-
-
-@router.post("/login", status_code=status.HTTP_201_CREATED, response_model=schemas.Token)
-async def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(
-        models.User.email == user_credentials.username).first()
+async def login(
+    user_credentials: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
+):
+    user = (
+        db.query(models.User)
+        .filter(models.User.email == user_credentials.username)
+        .first()
+    )
     if not user:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail=f"Invalid credentials")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Invalid credentials"
+        )
     if not verify_password(user_credentials.password, str(user.password)):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail=f"Invalid credentials")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Invalid credentials"
+        )
     access_token = oauth2.create_access_token(data={"user_email": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
