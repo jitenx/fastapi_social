@@ -9,6 +9,6 @@ wheels/
 # Virtual environments
 .venv
 olds/
-.env
-docker.env
+*.env
+
 tests/
