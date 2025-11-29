@@ -3,7 +3,8 @@ psycopg2-binary
 sqlmodel
 sqlalchemy
 emailvalidator
-passlib[bcrypt]
+passlib
 python-jose[cryptography]
 pydantic-settings
 alembic
+argon2-cffi

@@ -7,7 +7,6 @@ class AppSettings(BaseSettings):
     database_name: str
     database_password: str
     database_username: str
-    database_version: str
     algorithm: str
     secret_key: str
     access_token_expire_minutes: int
