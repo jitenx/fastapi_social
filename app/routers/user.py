@@ -35,45 +35,45 @@ async def get_users(db: Session = Depends(get_db)):
     return users
 
 
-@router.get("/{email}", response_model=schemas.User)
+@router.get("/{id}", response_model=schemas.User)
 async def get_user(
-    email: str,
+    id: int,
     db: Session = Depends(get_db),
     current_user=Depends(oauth2.get_current_user),
 ):
-    user = db.query(models.User).filter(models.User.email == email).first()
+    user = db.query(models.User).filter(models.User.id == id).first()
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with email: {email} is not found",
+            detail=f"User with email: {id} is not found",
         )
     return user
 
 
-@router.delete("/{email}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_user(
-    email: str,
-    db: Session = Depends(get_db),
-    current_user=Depends(oauth2.get_current_user),
-):
-    user = db.query(models.User).filter(models.User.email == email).first()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with email: {email} is not found",
-        )
-    if user.id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to delete this user",
-        )
+# @router.delete("/{email}", status_code=status.HTTP_204_NO_CONTENT)
+# async def delete_user(
+#     email: str,
+#     db: Session = Depends(get_db),
+#     current_user=Depends(oauth2.get_current_user),
+# ):
+#     user = db.query(models.User).filter(models.User.email == email).first()
+#     if not user:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail=f"User with email: {email} is not found",
+#         )
+#     if user.id != current_user.id:
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="Not authorized to delete this user",
+#         )
 
-    db.delete(user)
-    db.commit()
-    return user
+#     db.delete(user)
+#     db.commit()
+#     return user
 
 
-@router.delete("/id/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user_by_id(
     id: int,
     db: Session = Depends(get_db),
@@ -95,18 +95,18 @@ async def delete_user_by_id(
     return user
 
 
-@router.put("{email}", response_model=schemas.User, status_code=status.HTTP_200_OK)
+@router.put("/{id}", response_model=schemas.User, status_code=status.HTTP_200_OK)
 async def update_user(
-    email: str,
+    id: int,
     user_data: schemas.UserCreate,
     db: Session = Depends(get_db),
     current_user=Depends(oauth2.get_current_user),
 ):
-    user = db.query(models.User).filter(models.User.email == email).first()
+    user = db.query(models.User).filter(models.User.id == id).first()
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with email: {email} is not found",
+            detail=f"User with email: {id} is not found",
         )
     if user.id != current_user.id:
         raise HTTPException(
