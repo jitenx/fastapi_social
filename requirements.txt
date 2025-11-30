@@ -8,3 +8,4 @@ python-jose[cryptography]
 pydantic-settings
 alembic
 argon2-cffi
+pytest
