@@ -12,3 +12,4 @@ olds/
 *.env
 docker.env
 tests/
+calculations.py
