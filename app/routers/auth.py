@@ -30,7 +30,7 @@ async def login(
         )
     if not verify_password(user_credentials.password, str(user.password)):
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Invalid credentials"
+            status_code=status.HTTP_403_FORBIDDEN, detail="Incorrect Password"
         )
     access_token = oauth2.create_access_token(data={"user_email": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
