@@ -2,6 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class AppSettings(BaseSettings):
+    # database_version: str
     database_host: str
     database_port: str
     database_name: str
