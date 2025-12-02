@@ -35,7 +35,7 @@ async def get_users(db: Session = Depends(get_db)):
     return users
 
 
-@router.get("/{id}", response_model=schemas.User)
+@router.get("/{id}", response_model=schemas.UserOut)
 async def get_user(
     id: int,
     db: Session = Depends(get_db),
@@ -50,7 +50,7 @@ async def get_user(
     return user
 
 
-@router.get("/email/{email}", response_model=schemas.User)
+@router.get("/email/{email}", response_model=schemas.UserOut)
 async def get_user_by_email(
     email: str,
     db: Session = Depends(get_db),

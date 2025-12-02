@@ -16,6 +16,11 @@ class User(BaseModel):
     created_at: datetime
 
 
+class UserOut(User):
+    phone_number: str
+    address: str
+
+
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
