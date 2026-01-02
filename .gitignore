@@ -14,3 +14,4 @@ olds/
 docker.env
 tests/
 calculations.py
+*.toml
