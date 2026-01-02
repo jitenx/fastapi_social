@@ -12,6 +12,5 @@ wheels/
 olds/
 *.env
 docker.env
-tests/
 calculations.py
 *.toml
