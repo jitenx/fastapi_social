@@ -3,10 +3,10 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
-from ..config.config import settings
-from ..models.models import User
-from ..database.database import get_db
-from ..schemas.schemas import TokenData
+from app.config.config import settings
+from app.models.models import User
+from app.database.database import get_db
+from app.schemas.schemas import TokenData
 
 SECRET_KEY = settings.secret_key
 ALGORITHM = settings.algorithm
@@ -24,10 +24,10 @@ def create_access_token(data: dict):
 def verify_access_token(token: str, credentials_exception):
     try:
         payload = jwt.decode(token=token, key=SECRET_KEY, algorithms=ALGORITHM)
-        email = payload.get("user_email")
-        if not email:
+        id: str = str(payload.get("user_id"))
+        if not id:
             raise credentials_exception
-        token_data = TokenData(id=email)
+        token_data = TokenData(id=id)
     except JWTError:
         raise credentials_exception
     return token_data
@@ -42,7 +42,7 @@ def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-    token = verify_access_token(token, credentials_exception)  # type: ignore
+    token = verify_access_token(token, credentials_exception)
 
-    user = db.query(User).filter(User.email == token.id).first()  # type: ignore
+    user = db.query(User).filter(User.id == token.id).first()
     return user

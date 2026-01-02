@@ -15,10 +15,16 @@ class User(BaseModel):
     id: int
     created_at: datetime
 
+    class ConfigDict:
+        orm_mode = True
+
 
 class UserOut(User):
     phone_number: str
     address: str
+
+    class ConfigDict:
+        orm_mode = True
 
 
 class UserLogin(BaseModel):
@@ -42,10 +48,16 @@ class Post(PostBase):
     owner_id: int
     owner: User
 
+    class ConfigDict:
+        orm_mode = True
+
 
 class PostVoted(BaseModel):
     Post: Post
     votes: int
+
+    class ConfigDict:
+        orm_mode = True
 
 
 class Token(BaseModel):
