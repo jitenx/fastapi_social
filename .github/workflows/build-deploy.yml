@@ -30,22 +30,12 @@ jobs:
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
-          --health-retries 5
-    steps:
-      - uses: actions/checkout@v4
-      - name: Create database
-        run: |
-        env:
-          PGPASSWORD: postgres
-      - name: Run tests/migrations
-        run: |
-          python your_app_script_or_tests.py
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/social_test
-
-
+          --health-retries 5s
     runs-on: ubuntu-latest
     steps:
+      - name: Create database
+        run: |
+          psql -h localhost -U postgres -c "CREATE DATABASE social_test;"
       - name: pulling git repo
         uses: actions/checkout@v2
       - name: Install python
