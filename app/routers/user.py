@@ -57,6 +57,11 @@ async def get_user(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"User with email: {id} is not found",
         )
+    if current_user.id != id:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail="Not authorized to view this user",
+        )
     return user
 
 
@@ -71,6 +76,11 @@ async def get_user_by_email(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"User with email: {email} is not found",
+        )
+    if current_user.email != email:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail="Not authorized to view this user",
         )
     return user
 
