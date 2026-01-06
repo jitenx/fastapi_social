@@ -70,7 +70,7 @@ async def get_user_by_email(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with email: {id} is not found",
+            detail=f"User with email: {email} is not found",
         )
     return user
 
