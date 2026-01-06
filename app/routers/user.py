@@ -23,6 +23,16 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail=f"User with email: {new_user.email} already exists",
         )
+    user_phone = (
+        db.query(models.User)
+        .filter(models.User.phone_number == new_user.phone_number)
+        .first()
+    )
+    if user_phone:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail=f"User with phone number: {new_user.phone_number} already exists",
+        )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)

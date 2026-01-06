@@ -63,3 +63,6 @@ jobs:
           apiKey: ${{ secrets.RENDER_API_KEY }}
           node-version: lts/Jod #optional
           cli-version: 2.2.0 #optional
+
+
+#alembic upgrade head && 

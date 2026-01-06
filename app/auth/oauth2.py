@@ -24,10 +24,10 @@ def create_access_token(data: dict):
 def verify_access_token(token: str, credentials_exception):
     try:
         payload = jwt.decode(token=token, key=SECRET_KEY, algorithms=ALGORITHM)
-        id: str = str(payload.get("user_id"))
-        if not id:
+        email = payload.get("user_email")
+        if not email:
             raise credentials_exception
-        token_data = TokenData(id=id)
+        token_data = TokenData(email=email)
     except JWTError:
         raise credentials_exception
     return token_data
@@ -44,5 +44,5 @@ def get_current_user(
 
     token = verify_access_token(token, credentials_exception)
 
-    user = db.query(User).filter(User.id == token.id).first()
+    user = db.query(User).filter(User.email == token.email).first()
     return user
