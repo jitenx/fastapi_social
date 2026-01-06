@@ -40,6 +40,9 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: "3.14"
+      - name: Create database
+        run: |
+          psql -h localhost -U postgres -c "CREATE DATABASE social_test;"
       - name: update pip
         run: python -m pip install --upgrade pip
       - name: install all dependencies
