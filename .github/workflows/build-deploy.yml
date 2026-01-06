@@ -20,6 +20,8 @@ jobs:
       postgres:
         image: postgres
         env:
+          POSTGRES_HOST: postgres
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: social_test
         ports:
@@ -31,19 +33,7 @@ jobs:
           --health-retries 5
 
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository code
-        uses: actions/checkout@v4
-
-      # Set environment variables for the application to connect to the database
-      - name: Set PGHOST
-        run: echo "PGHOST=localhost" >> $GITHUB_ENV # Host is 'localhost' from the perspective of the main container due to port mapping
-
-      - name: Install postgresql-client (optional, for CLI tools)
-        run: apt-get update && apt-get install -y postgresql-client
-
-      - name: Connect and show version
-        run: psql -h localhost -U postgres -d testdb -c 'SELECT VERSION();'
+    stepss:
       - name: pulling git repo
         uses: actions/checkout@v2
       - name: Install python
