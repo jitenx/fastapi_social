@@ -31,6 +31,18 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create database
+        run: |
+        env:
+          PGPASSWORD: postgres
+      - name: Run tests/migrations
+        run: |
+          python your_app_script_or_tests.py
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/social_test
+
 
     runs-on: ubuntu-latest
     steps:
