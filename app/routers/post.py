@@ -65,6 +65,11 @@ async def create_post(
     db: Session = Depends(get_db),
     current_user=Depends(oauth2.get_current_user),
 ):
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
     new_post = models.Post(owner_id=current_user.id, **post.model_dump())
     db.add(new_post)
     db.commit()
