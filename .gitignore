@@ -13,4 +13,3 @@ olds/
 *.env
 docker.env
 calculations.py
-*.toml
