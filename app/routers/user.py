@@ -39,7 +39,7 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 
-@router.get("/", response_model=List[schemas.User])
+@router.get("/", response_model=List[schemas.UserPublic])
 async def get_users(db: Session = Depends(get_db)):
     users = db.query(models.User).all()
     return users

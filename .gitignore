@@ -13,3 +13,4 @@ olds/
 *.env
 docker.env
 calculations.py
+check/

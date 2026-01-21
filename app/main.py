@@ -1,12 +1,15 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-
 from app.routers import auth, post, user, vote
+from fastapi.templating import Jinja2Templates
 # from app.models import models
 # from app.database.database import engine
 
 # models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
+
+templates = Jinja2Templates(directory="templates")
+
 
 origins = ["*"]
 
@@ -25,5 +28,8 @@ app.include_router(vote.router)
 
 
 @app.get("/")
-def root():
-    return {"message": "Hello World from Docker container"}
+def home(request: Request):
+    return templates.TemplateResponse(
+        request,
+        "home.html",
+    )

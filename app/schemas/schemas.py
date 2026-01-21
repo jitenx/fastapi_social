@@ -4,13 +4,23 @@ from pydantic import BaseModel, EmailStr
 
 
 class UserCreate(BaseModel):
+    first_name: str
+    last_name: str
     email: EmailStr
     password: str
     phone_number: str
     address: str
 
 
+class UserPublic(BaseModel):
+    first_name: str
+    last_name: str
+    email: EmailStr
+
+
 class User(BaseModel):
+    first_name: str
+    last_name: str
     email: EmailStr
     id: int
     created_at: datetime
