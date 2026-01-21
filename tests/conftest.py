@@ -46,6 +46,8 @@ def client(session):
 @pytest.fixture
 def test_user2(client):
     user_data = {
+        "first_name": "Sanjeev",
+        "last_name": "Thiyag",
         "email": "sanjeev123@gmail.com",
         "password": "password123",
         "phone_number": "9874563210",
@@ -63,6 +65,8 @@ def test_user2(client):
 @pytest.fixture
 def test_user(client):
     user_data = {
+        "first_name": "Sanjeev",
+        "last_name": "Thiyag",
         "email": "sanjeev@gmail.com",
         "password": "password123",
         "phone_number": "9873563210",
