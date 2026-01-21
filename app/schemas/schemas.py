@@ -56,7 +56,7 @@ class Post(PostBase):
     id: int
     created_at: datetime
     owner_id: int
-    owner: User
+    owner: UserPublic
 
     class ConfigDict:
         orm_mode = True
