@@ -21,6 +21,8 @@ def test_create_user(client):
             "password": "password123",
             "phone_number": "9873563210",
             "address": "Dighwa",
+            "first_name": "Jitendra",
+            "last_name": "Kumar",
         },
     )
 
