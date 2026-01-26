@@ -11,7 +11,7 @@ import app.schemas.schemas as schemas
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
-@router.get("/", response_model=List[schemas.PostVoted])
+@router.get("", response_model=List[schemas.PostVoted])
 async def get_posts(
     db: Session = Depends(get_db),
     current_user=Depends(oauth2.get_current_user),
@@ -30,6 +30,33 @@ async def get_posts(
         .join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True)
         .group_by(models.Post.id)
         .filter(models.Post.title.contains(search))
+        .limit(limit)
+        .offset(skip)
+        .all()
+    )
+    return posts
+
+
+@router.get("/me", response_model=List[schemas.PostVoted])
+async def get_posts_by_user(
+    db: Session = Depends(get_db),
+    current_user=Depends(oauth2.get_current_user),
+    limit: int = 10,
+    skip: int = 0,
+    search: Optional[str] = "",
+):
+    # posts = db.query(models.Post).filter(current_user.id == models.Post.owner_id).all()
+    # posts = db.query(models.Post).filter(
+    #     models.Post.title.contains(search)).limit(limit).offset(skip).all()
+    # posts_query = db.query(models.Post, func.count(
+    #     models.Vote.post_id).label("votes")).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id)
+    # print(posts_query)
+    posts = (
+        db.query(models.Post, func.count(models.Vote.post_id).label("votes"))
+        .join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True)
+        .group_by(models.Post.id)
+        .filter(models.Post.title.contains(search))
+        .filter(models.Post.owner_id == current_user.id)
         .limit(limit)
         .offset(skip)
         .all()
@@ -59,7 +86,7 @@ async def get_post(
     return post
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
 async def create_post(
     post: schemas.PostCreate,
     db: Session = Depends(get_db),

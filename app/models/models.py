@@ -22,10 +22,10 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     email = Column(String, nullable=False, unique=True)
-    phone_number = Column(String, nullable=False, unique=True)
+    # phone_number = Column(String, nullable=False, unique=True)
     first_name = Column(String, nullable=True)
     last_name = Column(String, nullable=True)
-    address = Column(String, nullable=True)
+    # address = Column(String, nullable=True)
     password = Column(String, nullable=False)
     created_at = Column(
         TIMESTAMP(timezone=True), nullable=False, server_default=text("now()")

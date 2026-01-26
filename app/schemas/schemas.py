@@ -8,8 +8,8 @@ class UserCreate(BaseModel):
     last_name: str
     email: EmailStr
     password: str
-    phone_number: str
-    address: str
+    # phone_number: str
+    # address: str
 
 
 class UserPublic(BaseModel):
