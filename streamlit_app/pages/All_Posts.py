@@ -4,7 +4,7 @@ import streamlit as st
 if not st.session_state.get("authenticated"):
     st.switch_page("app.py")
 
-API_BASE = "http://127.0.0.1:8000"
+api_url = "http://127.0.0.1:8000"
 
 
 def fetch_data(endpoint: str):
@@ -18,7 +18,7 @@ def fetch_data(endpoint: str):
 
     headers = {"Authorization": f"Bearer {token}"}
 
-    response = requests.get(f"{API_BASE}{endpoint}", headers=headers)
+    response = requests.get(f"{api_url}{endpoint}", headers=headers)
 
     if response.status_code == 401:
         st.error("Session expired. Please login again.")
@@ -29,8 +29,8 @@ def fetch_data(endpoint: str):
     return response.json()
 
 
-st.title("Dashboard")
-
+st.title("Feed")
+st.divider()
 post_data = fetch_data("/posts")
 for post in post_data:
     st.subheader(f"{post['Post']['title']}")
@@ -39,11 +39,11 @@ for post in post_data:
         f"{post['Post']['owner']['first_name']} {post['Post']['owner']['last_name']}"
     )
 
-st.sidebar.divider()
+# st.sidebar.divider()
 
 if st.sidebar.button("🚪 Sign out"):
     st.session_state.clear()
     st.switch_page("app.py")
 st.divider()
-if st.button("Create Post"):
+if st.button("➕ Create Post"):
     st.switch_page("pages/Create_Post.py")

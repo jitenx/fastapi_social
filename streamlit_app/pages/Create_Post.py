@@ -4,7 +4,7 @@ import streamlit as st
 if not st.session_state.get("authenticated"):
     st.switch_page("app.py")
 
-API_BASE = "http://127.0.0.1:8000"
+api_url = "http://127.0.0.1:8000"
 
 
 def fetch_data(endpoint: str):
@@ -17,7 +17,7 @@ def fetch_data(endpoint: str):
         st.stop()
 
 
-st.title("➕ Create Post")
+st.title("api_urlCreate Post")
 form_values = {
     "title": None,
     "content": None,
@@ -45,7 +45,7 @@ if submitted:
         }
 
         with st.spinner("Sending request..."):
-            response = requests.post(f"{API_BASE}/posts", json=payload, headers=headers)
+            response = requests.post(f"{api_url}/posts", json=payload, headers=headers)
             data = response.json()
         if response.status_code == 201:
             st.success("Post created successfully 🎉")

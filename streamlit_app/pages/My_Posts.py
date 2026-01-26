@@ -4,7 +4,7 @@ import streamlit as st
 if not st.session_state.get("authenticated"):
     st.switch_page("app.py")
 
-API_BASE = "http://127.0.0.1:8000"
+api_url = "http://127.0.0.1:8000"
 
 
 def get_token():
@@ -19,7 +19,7 @@ def get_token():
 
 def fetch_data(endpoint: str):
     headers = get_token()
-    response = requests.get(f"{API_BASE}{endpoint}", headers=headers)
+    response = requests.get(f"{api_url}{endpoint}", headers=headers)
     if response.status_code == 401:
         st.error("Session expired. Please login again.")
         st.session_state.clear()
@@ -28,8 +28,8 @@ def fetch_data(endpoint: str):
     return response.json()
 
 
-st.title("Dashboard")
-
+st.title("Personal Dashboard")
+st.divider()
 post_data = fetch_data("/posts/me")
 
 # Show list of posts
@@ -50,7 +50,7 @@ for post in post_data:
     with col2:
         if st.button("Delete", key=f"delete_{post_id}"):
             headers = get_token()
-            response = requests.delete(f"{API_BASE}/posts/{post_id}", headers=headers)
+            response = requests.delete(f"{api_url}/posts/{post_id}", headers=headers)
             if response.status_code == 204:
                 st.success("Post deleted")
                 st.rerun()
@@ -87,7 +87,7 @@ if st.session_state.get("edit_post_id"):
             payload = {"title": title, "content": content, "published": published}
             headers = get_token()
             response = requests.put(
-                f"{API_BASE}/posts/{post_id}", json=payload, headers=headers
+                f"{api_url}/posts/{post_id}", json=payload, headers=headers
             )
 
             if response.status_code == 200:
@@ -101,11 +101,11 @@ if st.session_state.get("edit_post_id"):
 
 
 # Sidebar logout
-st.sidebar.divider()
+# st.sidebar.divider()
 if st.sidebar.button("🚪 Sign out"):
     st.session_state.clear()
     st.switch_page("app.py")
 
 st.divider()
-if st.button("Create another Post"):
+if st.button("➕ Create another Post"):
     st.switch_page("pages/Create_Post.py")

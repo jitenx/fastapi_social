@@ -36,6 +36,7 @@ with st.form(key="User Signup Form"):
     # form_values["address"] = st.text_area("Address")
 
     submit_button = st.form_submit_button()
+
     if submit_button:
         if not form_values["first_name"]:
             st.error("Please enter first name")
@@ -52,16 +53,32 @@ with st.form(key="User Signup Form"):
         # elif not form_values["address"]:
         #     st.error("Please enter address")
         else:
-            response = requests.post(url=api_url, data=json.dumps(form_values))
-            json_data = response.json()
-            if response.status_code == 201:
-                st.success("User Created succesfully.")
-                # st.info(f"""
-                # Email: {json_data["email"]} \n
-                # Name: {json_data["first_name"]} {json_data["last_name"]}
-                # """)
-                with st.spinner("Please wait..."):
-                    time.sleep(2)
-                st.switch_page("app.py")
-            if response.status_code == 406:
-                st.error(json_data["detail"])
+            try:
+                response = requests.post(url=api_url, data=json.dumps(form_values))
+                json_data = response.json()
+                if response.status_code == 201:
+                    st.success("User Created succesfully.")
+                    # st.info(f"""
+                    # Email: {json_data["email"]} \n
+                    # Name: {json_data["first_name"]} {json_data["last_name"]}
+                    # """)
+                    with st.spinner("Please wait..."):
+                        time.sleep(2)
+                    st.switch_page("app.py")
+                if response.status_code == 406:
+                    st.error(json_data["detail"])
+            except requests.exceptions.ConnectionError:
+                st.error(
+                    "⚠️ We’re having trouble connecting to the server right now.\n\n"
+                    "Your login didn’t go through. Please try again in a few moments."
+                )
+            except requests.exceptions.Timeout:
+                st.error(
+                    "⏱️ The server is taking too long to respond.\n\nPlease try again shortly."
+                )
+            except requests.exceptions.HTTPError:
+                st.error("❌ Login failed. Please check your credentials.")
+            except requests.exceptions.RequestException:
+                st.error(
+                    "⚠️ Something went wrong while contacting the server.\n\nPlease try again."
+                )
