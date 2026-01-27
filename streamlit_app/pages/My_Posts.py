@@ -28,7 +28,7 @@ def fetch_data(endpoint: str):
     return response.json()
 
 
-st.title("Personal Dashboard")
+st.title("Personal Feed")
 st.divider()
 post_data = fetch_data("/posts/me")
 
@@ -99,6 +99,9 @@ if st.session_state.get("edit_post_id"):
                 st.error("Failed to update post")
                 st.write(response.text)
 
+if st.sidebar.button(" ➕ Create Post"):
+    st.switch_page("pages/Create_Post.py")
+    
 
 # Sidebar logout
 # st.sidebar.divider()

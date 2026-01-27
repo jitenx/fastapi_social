@@ -30,8 +30,8 @@ class User(BaseModel):
 
 
 class UserOut(User):
-    phone_number: str
-    address: str
+    # phone_number: str
+    # address: str
 
     class ConfigDict:
         orm_mode = True

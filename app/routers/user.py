@@ -65,6 +65,15 @@ async def get_user(
     return user
 
 
+@router.get("/profile/me", response_model=schemas.UserOut)
+async def get_user(
+    db: Session = Depends(get_db),
+    current_user=Depends(oauth2.get_current_user),
+):
+    user = db.query(models.User).filter(models.User.email == current_user.email).first()
+    
+    return user
+
 @router.get("/email/{email}", response_model=schemas.UserOut)
 async def get_user_by_email(
     email: str,

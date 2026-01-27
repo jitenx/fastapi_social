@@ -40,8 +40,7 @@ def login(username, password):
 
         else:
             data = response.json()
-            st.error("Login failed")
-            st.text(data["detail"])
+            st.error(data["detail"])
     except requests.exceptions.ConnectionError:
         st.error(
             "⚠️ We’re having trouble connecting to the server right now.\n\n"

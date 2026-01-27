@@ -17,7 +17,7 @@ def fetch_data(endpoint: str):
         st.stop()
 
 
-st.title("api_urlCreate Post")
+st.title("➕ Create Post")
 form_values = {
     "title": None,
     "content": None,
@@ -60,3 +60,7 @@ if submitted:
         else:
             st.error("Failed to create item")
             st.text(response.text)
+
+if st.sidebar.button("🚪 Sign out"):
+    st.session_state.clear()
+    st.switch_page("app.py")

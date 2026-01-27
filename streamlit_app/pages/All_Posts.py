@@ -41,9 +41,15 @@ for post in post_data:
 
 # st.sidebar.divider()
 
+if st.sidebar.button(" ➕ Create Post"):
+    st.switch_page("pages/Create_Post.py")
+    
+
 if st.sidebar.button("🚪 Sign out"):
     st.session_state.clear()
     st.switch_page("app.py")
+# elif st.sidebar.button("User Profile"):
+#     st.switch_page("pages/User_Profile.py")
 st.divider()
 if st.button("➕ Create Post"):
     st.switch_page("pages/Create_Post.py")
