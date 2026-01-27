@@ -42,15 +42,15 @@ user_id=user_data["id"]
 col1, col2 = st.columns(2)
 
 with col1:
-    if st.button("Update", key=f"update_{user_id}"):
+    if st.button("✏️ Update", key=f"update_{user_id}"):
         st.session_state["edit_user_id"] = user_id
         st.session_state["edit_user_data"] = user_data
         st.rerun()
 
 with col2:
-    confirm = st.checkbox("I understand and want to delete")
+    confirm = st.checkbox("❗ I understand and want to delete")
     st.warning("⚠️ This action is irreversible")
-    if st.button("Delete",key=f"delete_{user_id}",disabled=not confirm) and confirm:
+    if st.button("🛑 Delete",key=f"delete_{user_id}",disabled=not confirm) and confirm:
         st.success("Deleted")
     # if st.button("Delete", key=f"delete_{user_id}"):
         headers = get_token()

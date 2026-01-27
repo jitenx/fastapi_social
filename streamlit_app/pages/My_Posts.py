@@ -42,13 +42,13 @@ for post in post_data:
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button("Update", key=f"update_{post_id}"):
+        if st.button("✏️ Update", key=f"update_{post_id}"):
             st.session_state["edit_post_id"] = post_id
             st.session_state["edit_post_data"] = post["Post"]
             st.rerun()
 
     with col2:
-        if st.button("Delete", key=f"delete_{post_id}"):
+        if st.button("🗑️ Delete", key=f"delete_{post_id}"):
             headers = get_token()
             response = requests.delete(f"{api_url}/posts/{post_id}", headers=headers)
             if response.status_code == 204:
@@ -70,8 +70,8 @@ if st.session_state.get("edit_post_id"):
             "Published?", value=post["published"], key="published_upd"
         )
 
-        update_btn = st.form_submit_button("Update", key="submit_update")
-        cancel_btn = st.form_submit_button("Cancel", key="cancel_update")
+        update_btn = st.form_submit_button("💾 Save", key="submit_update")
+        cancel_btn = st.form_submit_button("❌ Cancel", key="cancel_update")
 
     if cancel_btn:
         del st.session_state["edit_post_id"]
