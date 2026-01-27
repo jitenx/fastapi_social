@@ -392,14 +392,13 @@ dependencies = [
     { name = "fastapi", extra = ["standard"] },
     { name = "polars" },
     
-    { name = "pwdlib", extra = ["argon2"] },
+  
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "pytest" },
-    { name = "python-jose", extra = ["cryptography"] },
+    
     { name = "ruff" },
-    { name = "sqlalchemy" },
-    { name = "sqlmodel" },
+    
     { name = "st-pydantic" },
     { name = "streamlit" },
 ]
