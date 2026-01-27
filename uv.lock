@@ -391,7 +391,7 @@ dependencies = [
     { name = "emailvalidator" },
     { name = "fastapi", extra = ["standard"] },
     { name = "polars" },
-    { name = "psycopg2-binary" },
+    
     { name = "pwdlib", extra = ["argon2"] },
     { name = "pydantic" },
     { name = "pydantic-settings" },

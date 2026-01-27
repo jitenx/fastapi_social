@@ -1,5 +1,5 @@
 fastapi[standard]
-psycopg2-binary
+# psycopg2-binary
 sqlmodel
 sqlalchemy
 emailvalidator
