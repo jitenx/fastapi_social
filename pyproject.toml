@@ -9,7 +9,7 @@ dependencies = [
     "emailvalidator>=0.3",
     "fastapi[standard]>=0.128.0",
     "polars>=1.37.1",
-    "psycopg2-binary>=2.9.11",
+    
     "pwdlib[argon2]>=0.3.0",
     "pydantic>=2.12.5",
     "pydantic-settings>=2.12.0",
