@@ -9,7 +9,7 @@ from app.schemas import schemas
 router = APIRouter(prefix="/vote", tags=["Vote"])
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def vote(
     vote: schemas.Vote,
     db: Session = Depends(get_db),

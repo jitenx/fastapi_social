@@ -1,0 +1,4 @@
+API_BASE_URL = "http://127.0.0.1:8000"
+LOGIN_ENDPOINT = "/login"
+USERS_ENDPOINT = "/users"
+POSTS_ENDPOINT = "/posts"

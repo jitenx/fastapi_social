@@ -12,7 +12,7 @@ from app.schemas import schemas
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.User)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=schemas.User)
 async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     # hash the password
     user.password = utils.hash(user.password)
@@ -39,14 +39,14 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 
-@router.get("/", response_model=List[schemas.UserPublic])
+@router.get("", response_model=List[schemas.UserPublic])
 async def get_users(db: Session = Depends(get_db)):
     users = db.query(models.User).all()
     return users
 
 
 @router.get("/{id}", response_model=schemas.UserOut)
-async def get_user(
+async def get_user1(
     id: int,
     db: Session = Depends(get_db),
     current_user=Depends(oauth2.get_current_user),

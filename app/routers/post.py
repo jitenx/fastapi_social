@@ -30,6 +30,7 @@ async def get_posts(
         .join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True)
         .group_by(models.Post.id)
         .filter(models.Post.title.contains(search))
+        .filter(models.Post.published)
         .limit(limit)
         .offset(skip)
         .all()
