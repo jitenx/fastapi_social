@@ -3,21 +3,9 @@ name = "fastapi-social"
 version = "0.1.0"
 description = "Social Media"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
-    "alembic>=1.18.1",
-    "emailvalidator>=0.3",
     "fastapi[standard]>=0.128.0",
-    "polars>=1.37.1",
-    
-    "pwdlib[argon2]>=0.3.0",
-    "pydantic>=2.12.5",
-    "pydantic-settings>=2.12.0",
-    "pytest>=9.0.2",
-    "python-jose[cryptography]>=3.5.0",
-    "ruff>=0.14.13",
-    "sqlalchemy>=2.0.45",
-    "sqlmodel>=0.0.31",
     "st-pydantic>=0.3.1",
     "streamlit>=1.53.1",
 ]

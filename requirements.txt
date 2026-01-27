@@ -1,13 +1,13 @@
-fastapi[standard]
+# fastapi[standard]
 # psycopg2-binary
-sqlmodel
-sqlalchemy
-emailvalidator
-pwdlib[argon2]
-python-jose[cryptography]
-pydantic-settings
-alembic
-pytest
-ruff
+# sqlmodel
+# sqlalchemy
+# emailvalidator
+# pwdlib[argon2]
+# python-jose[cryptography]
+# pydantic-settings
+# alembic
+# pytest
+# ruff
 streamlit
 st_pydantic
