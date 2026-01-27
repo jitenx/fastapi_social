@@ -9,5 +9,3 @@ pydantic-settings
 alembic
 pytest
 ruff
-streamlit
-st_pydantic

@@ -1,8 +1,8 @@
-"""remove address and phone number columns
+"""initial migration
 
-Revision ID: b450d9a26688
-Revises: 99bd8ee143f9
-Create Date: 2026-01-26 23:48:58.854219
+Revision ID: a3afd2c118ff
+Revises: 
+Create Date: 2026-01-27 17:36:22.416237
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'b450d9a26688'
-down_revision: Union[str, Sequence[str], None] = '99bd8ee143f9'
+revision: str = 'a3afd2c118ff'
+down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
