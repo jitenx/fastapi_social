@@ -15,7 +15,7 @@ for post in posts:
     p = post["Post"]
     post_id = p["id"]
 
-    st.subheader(p["title"])
+    st.title(p["title"])
     st.write(p["content"])
 
     col1, col2 = st.columns(2)
@@ -43,11 +43,10 @@ if "edit_post" in st.session_state:
         st.rerun()
 
     if save:
-        put(f"/posts/{post['id']}", {
-            "title": title,
-            "content": content,
-            "published": published
-        })
+        put(
+            f"/posts/{post['id']}",
+            {"title": title, "content": content, "published": published},
+        )
         st.success("Post updated")
         del st.session_state["edit_post"]
         st.rerun()

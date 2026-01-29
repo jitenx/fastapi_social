@@ -13,6 +13,6 @@ posts = get("/posts")
 
 for post in posts:
     p = post["Post"]
-    st.subheader(p["title"])
+    st.title(p["title"])
     st.write(p["content"])
     st.caption(f"{p['owner']['first_name']} {p['owner']['last_name']}")
