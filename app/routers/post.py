@@ -19,14 +19,14 @@ async def get_posts(
     skip: int = 0,
     search: Optional[str] = "",
 ):
-    # posts = db.query(models.Post).filter(current_user.id == models.Post.owner_id).all()
-    # posts = db.query(models.Post).filter(
-    #     models.Post.title.contains(search)).limit(limit).offset(skip).all()
-    # posts_query = db.query(models.Post, func.count(
-    #     models.Vote.post_id).label("votes")).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id)
-    # print(posts_query)
     posts = (
-        db.query(models.Post, func.count(models.Vote.post_id).label("votes"))
+        db.query(
+            models.Post,
+            func.count(models.Vote.post_id).label("votes"),
+            func.count(func.nullif(models.Vote.user_id != current_user.id, True)).label(
+                "user_voted"
+            ),
+        )
         .join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True)
         .group_by(models.Post.id)
         .filter(models.Post.title.contains(search))
@@ -35,7 +35,14 @@ async def get_posts(
         .offset(skip)
         .all()
     )
-    return posts
+
+    result = []
+    for post, votes, user_voted_count in posts:
+        result.append(
+            {"Post": post, "votes": votes, "user_voted": bool(user_voted_count)}
+        )
+
+    return result
 
 
 @router.get("/me", response_model=List[schemas.PostVoted])
@@ -46,14 +53,14 @@ async def get_posts_by_user(
     skip: int = 0,
     search: Optional[str] = "",
 ):
-    # posts = db.query(models.Post).filter(current_user.id == models.Post.owner_id).all()
-    # posts = db.query(models.Post).filter(
-    #     models.Post.title.contains(search)).limit(limit).offset(skip).all()
-    # posts_query = db.query(models.Post, func.count(
-    #     models.Vote.post_id).label("votes")).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id)
-    # print(posts_query)
     posts = (
-        db.query(models.Post, func.count(models.Vote.post_id).label("votes"))
+        db.query(
+            models.Post,
+            func.count(models.Vote.post_id).label("votes"),
+            func.count(func.nullif(models.Vote.user_id != current_user.id, True)).label(
+                "user_voted"
+            ),
+        )
         .join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True)
         .group_by(models.Post.id)
         .filter(models.Post.title.contains(search))
@@ -62,7 +69,14 @@ async def get_posts_by_user(
         .offset(skip)
         .all()
     )
-    return posts
+
+    result = []
+    for post, votes, user_voted_count in posts:
+        result.append(
+            {"Post": post, "votes": votes, "user_voted": bool(user_voted_count)}
+        )
+
+    return result
 
 
 @router.get("/{id}", response_model=schemas.PostVoted)
@@ -71,20 +85,33 @@ async def get_post(
     db: Session = Depends(get_db),
     current_user=Depends(oauth2.get_current_user),
 ):
-    # post = db.query(models.Post).filter(models.Post.id == id).first()
     post = (
-        db.query(models.Post, func.count(models.Vote.post_id).label("votes"))
+        db.query(
+            models.Post,
+            func.count(models.Vote.post_id).label("votes"),
+            func.count(func.nullif(models.Vote.user_id != current_user.id, True)).label(
+                "user_voted"
+            ),
+        )
         .join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True)
         .group_by(models.Post.id)
         .filter(models.Post.id == id)
         .first()
     )
+
     if not post:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Post with id: {id} is not found",
         )
-    return post
+
+    post_obj, votes, user_voted_count = post
+
+    return {
+        "Post": post_obj,
+        "votes": votes,
+        "user_voted": bool(user_voted_count),
+    }
 
 
 @router.post("", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)

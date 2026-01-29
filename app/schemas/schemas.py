@@ -65,6 +65,7 @@ class Post(PostBase):
 class PostVoted(BaseModel):
     Post: Post
     votes: int
+    user_voted: bool
 
     class ConfigDict:
         orm_mode = True
