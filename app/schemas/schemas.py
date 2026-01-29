@@ -82,3 +82,7 @@ class TokenData(BaseModel):
 class Vote(BaseModel):
     post_id: int
     dir: bool
+
+
+class UserDelete(BaseModel):
+    password: str

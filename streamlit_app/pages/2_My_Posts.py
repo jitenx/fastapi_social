@@ -11,11 +11,31 @@ st.divider()
 
 posts = get("/posts/me")
 
+
+# ---------- DELETE CONFIRMATION DIALOG ----------
+@st.dialog("Confirm delete")
+def confirm_delete(post_id):
+    st.warning(
+        "⚠️ Are you sure you want to delete this post? This action cannot be undone."
+    )
+
+    col1, col2 = st.columns(2)
+
+    if col1.button("❌ Cancel"):
+        st.rerun()
+
+    if col2.button("🗑️ Yes, delete"):
+        delete(f"/posts/{post_id}")
+        st.success("Post deleted")
+        st.rerun()
+
+
+# ---------- POSTS LIST ----------
 for post in posts:
     p = post["Post"]
     post_id = p["id"]
 
-    st.title(p["title"])
+    st.subheader(p["title"])
     st.write(p["content"])
 
     col1, col2 = st.columns(2)
@@ -24,19 +44,23 @@ for post in posts:
         st.session_state["edit_post"] = p
 
     if col2.button("🗑️ Delete", key=f"del_{post_id}"):
-        delete(f"/posts/{post_id}")
-        st.success("Post deleted")
-        st.rerun()
+        confirm_delete(post_id)
 
+# ---------- UPDATE FORM ----------
 if "edit_post" in st.session_state:
     post = st.session_state["edit_post"]
+
+    st.divider()
+    st.subheader("Edit post")
 
     with st.form("update_post"):
         title = st.text_input("Title", post["title"])
         content = st.text_area("Content", post["content"])
         published = st.checkbox("Published", post["published"])
-        save = st.form_submit_button("Save")
-        cancel = st.form_submit_button("Cancel")
+
+        col1, col2 = st.columns(2)
+        save = col1.form_submit_button("💾 Save")
+        cancel = col2.form_submit_button("❌ Cancel")
 
     if cancel:
         del st.session_state["edit_post"]
@@ -45,7 +69,11 @@ if "edit_post" in st.session_state:
     if save:
         put(
             f"/posts/{post['id']}",
-            {"title": title, "content": content, "published": published},
+            {
+                "title": title,
+                "content": content,
+                "published": published,
+            },
         )
         st.success("Post updated")
         del st.session_state["edit_post"]

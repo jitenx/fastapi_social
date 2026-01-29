@@ -71,8 +71,9 @@ async def get_user(
     current_user=Depends(oauth2.get_current_user),
 ):
     user = db.query(models.User).filter(models.User.email == current_user.email).first()
-    
+
     return user
+
 
 @router.get("/email/{email}", response_model=schemas.UserOut)
 async def get_user_by_email(
@@ -94,49 +95,58 @@ async def get_user_by_email(
     return user
 
 
-@router.delete("/email/{email}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_user_by_email(
-    email: str,
-    db: Session = Depends(get_db),
-    current_user=Depends(oauth2.get_current_user),
-):
-    user = db.query(models.User).filter(models.User.email == email).first()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with email: {email} is not found",
-        )
-    if user.id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to delete this user",
-        )
+# @router.delete("/email/{email}", status_code=status.HTTP_204_NO_CONTENT)
+# async def delete_user_by_email(
+#     email: str,
+#     db: Session = Depends(get_db),
+#     current_user=Depends(oauth2.get_current_user),
+# ):
+#     user = db.query(models.User).filter(models.User.email == email).first()
+#     if not user:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail=f"User with email: {email} is not found",
+#         )
+#     if user.id != current_user.id:
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="Not authorized to delete this user",
+#         )
 
-    db.delete(user)
-    db.commit()
-    return user
+#     db.delete(user)
+#     db.commit()
+#     return user
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
     id: int,
+    user_data: schemas.UserDelete,
     db: Session = Depends(get_db),
     current_user=Depends(oauth2.get_current_user),
 ):
     user = db.query(models.User).filter(models.User.id == id).first()
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with id: {id} is not found",
+            detail="User not found",
         )
+
     if user.id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to delete this user",
         )
+
+    if not utils.pwd_context.verify(user_data.password, user.password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect password",
+        )
+
     db.delete(user)
     db.commit()
-    return user
 
 
 @router.put("/{id}", response_model=schemas.User, status_code=status.HTTP_200_OK)
@@ -166,30 +176,30 @@ async def update_user(
     return user
 
 
-@router.put(
-    "/email/{email}", response_model=schemas.User, status_code=status.HTTP_200_OK
-)
-async def update_user_by_email(
-    email: str,
-    user_data: schemas.UserCreate,
-    db: Session = Depends(get_db),
-    current_user=Depends(oauth2.get_current_user),
-):
-    user = db.query(models.User).filter(models.User.email == email).first()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with email: {id} is not found",
-        )
-    if user.id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to update this user",
-        )
-    for field, value in user_data.model_dump().items():
-        if field == "password":
-            value = utils.hash(user_data.password)
-        setattr(user, field, value)
-    db.commit()
-    db.refresh(user)
-    return user
+# @router.put(
+#     "/email/{email}", response_model=schemas.User, status_code=status.HTTP_200_OK
+# )
+# async def update_user_by_email(
+#     email: str,
+#     user_data: schemas.UserCreate,
+#     db: Session = Depends(get_db),
+#     current_user=Depends(oauth2.get_current_user),
+# ):
+#     user = db.query(models.User).filter(models.User.email == email).first()
+#     if not user:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail=f"User with email: {id} is not found",
+#         )
+#     if user.id != current_user.id:
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="Not authorized to update this user",
+#         )
+#     for field, value in user_data.model_dump().items():
+#         if field == "password":
+#             value = utils.hash(user_data.password)
+#         setattr(user, field, value)
+#     db.commit()
+#     db.refresh(user)
+#     return user
