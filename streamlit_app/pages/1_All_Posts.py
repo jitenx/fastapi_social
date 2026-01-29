@@ -43,19 +43,39 @@ for idx, item in enumerate(posts):
     st.write(post1["content"])
     st.caption(f"{post1['owner']['first_name']} {post1['owner']['last_name']}")
 
-    col1, col2, col3 = st.columns([1, 1, 8])
+    # Button label and color based on vote status
+    if user_voted:
+        button_label = "Remove Vote"
+        button_color = "#ff4b4b"  # red
+        direction = 0
+    else:
+        button_label = "Vote"
+        button_color = "#00c853"  # green
+        direction = 1
 
-    with col1:
-        # Upvote button enabled only if user has NOT voted
-        if st.button("⬆", key=f"up_{post_id}_{idx}", disabled=user_voted):
-            vote(post_id, 1)
+    key = f"vote_{post_id}_{idx}"
 
-    with col2:
-        st.markdown(f"**{votes}**")
+    # CSS targeting the Streamlit button by key
+    st.markdown(
+        f"""
+        <style>
+        button[data-testid="stButton"][data-key="{key}"] {{
+            background-color: {button_color} !important;
+            color: white !important;
+            border: none !important;
+        }}
+        button[data-testid="stButton"][data-key="{key}"]:hover {{
+            background-color: {button_color} !important;
+            opacity: 0.9 !important;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    with col3:
-        # Downvote button enabled only if user HAS voted
-        if st.button("⬇", key=f"down_{post_id}_{idx}", disabled=not user_voted):
-            vote(post_id, 0)
+    # Render the button
+    if st.button(button_label, key=key):
+        vote(post_id, direction)
 
+    st.markdown(f"**Votes:** {votes}")
     st.divider()
