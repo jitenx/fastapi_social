@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.main import app
+from app.app import app
 
 from app.config.config import settings
 from app.database.database import get_db, Base
@@ -50,8 +50,6 @@ def test_user2(client):
         "last_name": "Thiyag",
         "email": "sanjeev123@gmail.com",
         "password": "password123",
-        "phone_number": "9874563210",
-        "address": "Asansol",
     }
     res = client.post("/users/", json=user_data)
 
@@ -69,8 +67,6 @@ def test_user(client):
         "last_name": "Thiyag",
         "email": "sanjeev@gmail.com",
         "password": "password123",
-        "phone_number": "9873563210",
-        "address": "Dighwa",
     }
     res = client.post("/users/", json=user_data)
 
