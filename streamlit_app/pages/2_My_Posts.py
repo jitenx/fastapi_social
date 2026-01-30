@@ -12,7 +12,7 @@ st.divider()
 posts = get("/posts/me")
 if not posts:
     st.info("You have not posted anything yet.")
-    button=st.button("➕ Create Post")
+    button = st.button("➕ Create Post")
     if button:
         st.switch_page("pages/3_Create_Post.py")
     st.stop()

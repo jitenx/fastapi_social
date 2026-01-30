@@ -27,7 +27,7 @@ posts = get("/posts")
 
 if not posts:
     st.info("No posts available.")
-    button=st.button("➕ Create Post")
+    button = st.button("➕ Create Post")
     if button:
         st.switch_page("pages/3_Create_Post.py")
     st.stop()

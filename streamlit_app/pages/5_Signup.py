@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 import json
-from core.config import API_BASE_URL,USERS_ENDPOINT
+from core.config import API_BASE_URL, USERS_ENDPOINT
 from core.validators import valid_email
 from core.auth import is_authenticated
 
@@ -25,12 +25,14 @@ else:
         else:
             response = requests.post(
                 f"{API_BASE_URL}{USERS_ENDPOINT}",
-                data=json.dumps({
-                    "first_name": first,
-                    "last_name": last,
-                    "email": email,
-                    "password": password
-                })
+                data=json.dumps(
+                    {
+                        "first_name": first,
+                        "last_name": last,
+                        "email": email,
+                        "password": password,
+                    }
+                ),
             )
 
             if response.status_code == 201:

@@ -26,7 +26,8 @@ async def login(
     )
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="User doesn not exist! Please create an account"
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User doesn not exist! Please create an account",
         )
     if not verify_password(user_credentials.password, str(user.password)):
         raise HTTPException(

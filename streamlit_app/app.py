@@ -1,33 +1,24 @@
 import streamlit as st
 import requests
-from core.auth import init_auth, login_success,is_authenticated
+from core.auth import init_auth, login_success, is_authenticated
 from core.config import API_BASE_URL, LOGIN_ENDPOINT
 from core.validators import valid_email
 
 
-
-
-# st.sidebar.page_link('app.py', label='Home')
-
 if is_authenticated():
     st.switch_page("pages/1_All_Posts.py")
-    st.sidebar.page_link('pages/1_All_Posts.py', label='Feed')
 else:
     init_auth()
     st.title("Login")
 
     def login(email, password):
-        payload = {
-            "grant_type": "password",
-            "username": email,
-            "password": password
-        }
+        payload = {"grant_type": "password", "username": email, "password": password}
 
         try:
             response = requests.post(
                 f"{API_BASE_URL}{LOGIN_ENDPOINT}",
                 data=payload,
-                headers={"Content-Type": "application/x-www-form-urlencoded"}
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
             )
 
             if response.status_code == 201:

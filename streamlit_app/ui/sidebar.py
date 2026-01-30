@@ -1,6 +1,7 @@
 import streamlit as st
 from core.auth import logout
 
+
 def render_sidebar():
     if st.sidebar.button("Feed"):
         st.switch_page("pages/1_All_Posts.py")

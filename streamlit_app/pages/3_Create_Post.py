@@ -20,11 +20,14 @@ def submit_post():
         st.session_state.error = "Title and content required"
         return
 
-    post("/posts", {
-        "title": st.session_state.title,
-        "content": st.session_state.content,
-        "published": st.session_state.published
-    })
+    post(
+        "/posts",
+        {
+            "title": st.session_state.title,
+            "content": st.session_state.content,
+            "published": st.session_state.published,
+        },
+    )
 
     # clear form
     st.session_state.title = ""
