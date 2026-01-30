@@ -5,7 +5,7 @@ FASTAPI_PORT=8000
 STREAMLIT_PORT=8501
 
 run:
-	@echo "ℹ️  Use 'make -f run_app.mk run' to start both services."
+	@echo "ℹ️  Use 'make run' to start both services."
 	@echo "🚀 Starting FastAPI..."
 	@uv run uvicorn app.app:app --host $(FASTAPI_HOST) --port $(FASTAPI_PORT) --reload & \
 	echo $$! > .fastapi.pid
@@ -17,7 +17,7 @@ run:
 	@echo "FastAPI: http://$(FASTAPI_HOST):$(FASTAPI_PORT)"
 	@echo "Streamlit: http://localhost:$(STREAMLIT_PORT)"
 	@echo ""
-	@echo "ℹ️  Use 'make -f run_app.mk stop' to stop both services."
+	@echo "ℹ️  Use 'make stop' to stop both services."
 	@echo ""
 	@wait
 
