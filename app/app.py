@@ -27,4 +27,4 @@ app.include_router(vote.router)
 
 @app.get("/")
 def home():
-    return RedirectResponse(url="/docs")
+    return {"message":"Check changes are applied"}

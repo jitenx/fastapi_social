@@ -1,6 +1,7 @@
 import streamlit as st
 from core.auth import logout
 
+
 # Helper function for modern sidebar cards
 def sidebar_card(label, icon="", page=None, key=None):
     full_label = f"{icon}  {label}" if icon else label
@@ -10,7 +11,8 @@ def sidebar_card(label, icon="", page=None, key=None):
     clicked = st.sidebar.button(full_label, key=key)
 
     # CSS styling for a card-like button
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <style>
     div.stButton > button[title="{full_label}"] {{
         display: flex;
@@ -37,7 +39,9 @@ def sidebar_card(label, icon="", page=None, key=None):
         box-shadow: 0 6px 14px rgba(0,0,0,0.25);
     }}
     </style>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     # Handle click
     if clicked:
@@ -46,10 +50,15 @@ def sidebar_card(label, icon="", page=None, key=None):
         elif page:
             st.switch_page(page)
 
+
 # Sidebar rendering function
 def render_sidebar():
     sidebar_card("Feed", "📜", page="pages/1_All_Posts.py", key="feed")
     sidebar_card("My Posts", "📝", page="pages/2_My_Posts.py", key="my_posts")
-    sidebar_card("➕ Create Post", "✏️", page="pages/3_Create_Post.py", key="create_post")
-    sidebar_card("Update Profile", "👤", page="pages/4_User_Profile.py", key="update_profile")
+    sidebar_card(
+        "➕ Create Post", "✏️", page="pages/3_Create_Post.py", key="create_post"
+    )
+    sidebar_card(
+        "Update Profile", "👤", page="pages/4_User_Profile.py", key="update_profile"
+    )
     sidebar_card("🚪 Sign out", "🔓", page="logout", key="sign_out")
