@@ -5,8 +5,13 @@ from core.config import API_BASE_URL, LOGIN_ENDPOINT
 from core.validators import valid_email
 
 
+
+
+# st.sidebar.page_link('app.py', label='Home')
+
 if is_authenticated():
     st.switch_page("pages/1_All_Posts.py")
+    st.sidebar.page_link('pages/1_All_Posts.py', label='Feed')
 else:
     init_auth()
     st.title("Login")
