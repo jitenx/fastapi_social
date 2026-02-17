@@ -3,13 +3,14 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 
+# -------------------- USER SCHEMAS --------------------
 class UserCreate(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
     password: str
-    # phone_number: str
-    # address: str
+    # phone_number: Optional[str] = None
+    # address: Optional[str] = None
 
 
 class UserPublic(BaseModel):
@@ -19,22 +20,21 @@ class UserPublic(BaseModel):
 
 
 class User(BaseModel):
+    id: int
     first_name: str
     last_name: str
     email: EmailStr
-    id: int
     created_at: datetime
 
-    class ConfigDict:
-        orm_mode = True
+    class Config:
+        from_attributes = True
 
 
 class UserOut(User):
-    # phone_number: str
-    # address: str
-
-    class ConfigDict:
-        orm_mode = True
+    # phone_number: Optional[str] = None
+    # address: Optional[str] = None
+    class Config:
+        from_attributes = True
 
 
 class UserLogin(BaseModel):
@@ -42,6 +42,11 @@ class UserLogin(BaseModel):
     password: str
 
 
+class UserDelete(BaseModel):
+    password: str
+
+
+# -------------------- POST SCHEMAS --------------------
 class PostBase(BaseModel):
     title: str
     content: str
@@ -58,8 +63,8 @@ class Post(PostBase):
     owner_id: int
     owner: UserPublic
 
-    class ConfigDict:
-        orm_mode = True
+    class Config:
+        from_attributes = True
 
 
 class PostVoted(BaseModel):
@@ -67,10 +72,11 @@ class PostVoted(BaseModel):
     votes: int
     user_voted: bool
 
-    class ConfigDict:
-        orm_mode = True
+    class Config:
+        from_attributes = True
 
 
+# -------------------- AUTH / VOTE SCHEMAS --------------------
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -82,8 +88,4 @@ class TokenData(BaseModel):
 
 class Vote(BaseModel):
     post_id: int
-    dir: bool
-
-
-class UserDelete(BaseModel):
-    password: str
+    dir: bool  # True = vote, False = remove vote
