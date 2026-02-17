@@ -54,10 +54,6 @@ def sidebar_card(label, icon="", page=None, key=None):
 # Sidebar rendering function
 def render_sidebar():
     sidebar_card("Feed", "📜", page="pages/1_All_Posts.py", key="feed")
-    sidebar_card("My Posts", "📝", page="pages/2_My_Posts.py", key="my_posts")
-    sidebar_card(
-        "➕ Create Post", "✏️", page="pages/3_Create_Post.py", key="create_post"
-    )
     sidebar_card(
         "Update Profile", "👤", page="pages/4_User_Profile.py", key="update_profile"
     )

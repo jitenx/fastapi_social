@@ -4,7 +4,6 @@ from core.auth import init_auth, login_success, is_authenticated
 from core.config import API_BASE_URL, LOGIN_ENDPOINT
 from core.validators import valid_email
 
-
 if is_authenticated():
     st.switch_page("pages/1_All_Posts.py")
 else:
@@ -43,7 +42,6 @@ else:
             st.error("Invalid email format")
         else:
             login(email, password)
-
     st.write("Don't have an account?")
     if st.button("Create account"):
         st.switch_page("pages/5_Signup.py")

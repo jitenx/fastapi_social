@@ -9,7 +9,7 @@ from app.routers import auth, post, user, vote
 app = FastAPI()
 
 
-origins = ["*"]
+origins = ["*", "http://localhost:3000"]
 
 app.add_middleware(
     CORSMiddleware,

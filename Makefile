@@ -17,8 +17,7 @@ run: migrate
 	echo $$! > .streamlit.pid
 	@echo ""
 	@echo "✅ Services started!"
-	@echo "FastAPI: http://$(FASTAPI_HOST):$(FASTAPI_PORT)"
-	@echo "Streamlit: http://localhost:$(STREAMLIT_PORT)"
+	@echo "FastAPI: http://$(FASTAPI_HOST):$(FASTAPI_PORT)" @echo "Streamlit: http://localhost:$(STREAMLIT_PORT)"
 	@echo ""
 	@echo "ℹ️  Use 'make stop' to stop both services."
 	@echo ""
