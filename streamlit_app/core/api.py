@@ -9,7 +9,6 @@ def _handle_response(response):
         st.error("Session expired. Please login again.")
         logout()
         return None
-
     if not response.ok:  # any other 4xx/5xx
         try:
             # Try to get detail from response

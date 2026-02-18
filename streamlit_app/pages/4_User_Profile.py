@@ -60,7 +60,7 @@ with tab2:
 
 
 with tab3:
-    st.subheader("✏️ Update Email")
+    st.subheader("📧 Update Email")
     with st.form("update_email"):
         email = st.text_input("Email", user["email"])
 
@@ -86,7 +86,7 @@ with tab3:
 with tab4:
     st.subheader("🔐 Change Password")
 
-    with st.form("change_password"):
+    with st.form("change_password_form"):
         current_password = st.text_input("Current Password", type="password")
         new_password = st.text_input("New Password", type="password")
         confirm_password = st.text_input("Confirm New Password", type="password")
@@ -95,32 +95,46 @@ with tab4:
         save = col1.form_submit_button("💾 Save")
 
     if save:
+        # 1️⃣ Check all fields filled
         if not all([current_password, new_password, confirm_password]):
             st.error("All fields are required")
-
+        # 2️⃣ Confirm new passwords match
         elif new_password != confirm_password:
             st.error("New passwords do not match")
         else:
+            # 3️⃣ Validate password strength
             strength_errors = check_password_strength(new_password)
-
             if strength_errors:
                 st.error("Password must contain:\n- " + "\n- ".join(strength_errors))
-
             else:
+                # 4️⃣ Attempt to update password via API
                 try:
-                    patch(
+                    response = patch(
                         f"/users/{user['id']}",
                         {
                             "password": new_password,
                             "current_password": current_password,
                         },
                     )
-                    st.success("✅ Password updated — please login again")
-                    time.sleep(2)
-                    logout()
+                    # Only show success if patch returned successfully
+                    if (
+                        response
+                    ):  # or response status check if your patch returns more info
+                        st.success(
+                            "✅ Password updated successfully — please login again"
+                        )
+                        time.sleep(2)
+                        logout()
+                    else:
+                        st.error("❌ Password update failed")
 
                 except Exception as e:
-                    st.error(str(e))
+                    # Handle specific backend errors
+                    err_msg = str(e)
+                    if "Current password is incorrect" in err_msg:
+                        st.error("❌ Current password is incorrect")
+                    else:
+                        st.error(f"❌ Failed to update password: {err_msg}")
 
 
 # -------------------- DELETE ACCOUNT --------------------
