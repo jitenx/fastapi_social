@@ -17,55 +17,66 @@ st.divider()
 # -------------------- CREATE POST DIALOG --------------------
 @st.dialog("➕ Create Post")
 def create_post_dialog():
-    if "create_error" not in st.session_state:
-        st.session_state.create_error = None
+    # Initialize session_state
+    for key in [
+        "create_error",
+        "create_title",
+        "create_content",
+        "create_published",
+        "refresh_feed",
+    ]:
+        if key not in st.session_state:
+            st.session_state[key] = "" if "title" in key or "content" in key else False
 
+    # Callback to handle post creation
     def submit_post():
-        if not st.session_state.create_title or not st.session_state.create_content:
+        title = st.session_state.create_title
+        content = st.session_state.create_content
+        published = st.session_state.create_published
+
+        # Validation
+        if not title or not content:
             st.session_state.create_error = "Title and content are required"
             return
-        else:
-            try:
-                post(
-                    "/posts",
-                    {
-                        "title": st.session_state.create_title,
-                        "content": st.session_state.create_content,
-                        "published": st.session_state.create_published,
-                    },
-                )
-            except Exception as e:
-                st.session_state.create_error = f"Failed to create post: {str(e)}"
-                return
 
-            # Clear form
-            st.session_state.create_title = ""
-            st.session_state.create_content = ""
-            st.session_state.create_published = False
-            st.session_state.create_error = None
+        try:
+            post(
+                "/posts",
+                {"title": title, "content": content, "published": published},
+            )
+        except Exception as e:
+            st.session_state.create_error = f"Failed to create post: {str(e)}"
+            return
 
-            # Flag to refresh feed after dialog closes
-            st.session_state.refresh_feed = True
-            return  # close the dialog
+        # Success → set flags to reset form after render
+        st.session_state.create_error = None
+        st.session_state.create_title = ""
+        st.session_state.create_content = ""
+        st.session_state.create_published = False
+        st.session_state.refresh_feed = True
+        st.session_state._rerun_needed = True  # custom flag
 
     # -------------------- FORM --------------------
     with st.form("create_post_form"):
         st.text_input("Title", key="create_title")
         st.text_area("Content", key="create_content")
         st.checkbox("Publish now?", key="create_published")
-        col1, col2 = st.columns(2)
-        create = col1.form_submit_button("Create", on_click=submit_post)
 
+        col1, col2 = st.columns(2)
+        col1.form_submit_button("Create", on_click=submit_post)
         cancel = col2.form_submit_button("Cancel")
         if cancel:
             st.rerun()
-        if create:
-            with st.spinner("Creating post..."):
-                st.toast("Post created successfully ✅")
-                st.rerun()
 
+    # -------------------- SHOW ERROR --------------------
     if st.session_state.create_error:
         st.error(st.session_state.create_error)
+
+    # -------------------- RERUN IF NEEDED --------------------
+    # This runs outside the callback
+    if "_rerun_needed" in st.session_state and st.session_state._rerun_needed:
+        st.session_state._rerun_needed = False
+        st.rerun()
 
 
 # -------------------- UPDATE POST DIALOG --------------------
