@@ -11,7 +11,7 @@ class AppSettings(BaseSettings):
     algorithm: str
     secret_key: str
     access_token_expire_minutes: int
-
+    database_com: str
     # Config for reading .env
     model_config = SettingsConfigDict(
         env_file=".env",

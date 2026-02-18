@@ -3,11 +3,14 @@ from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from ..config.config import settings
 
 # Async SQLAlchemy URL for PostgreSQL
-DATABASE_URL = (
-    f"postgresql+asyncpg://{settings.database_username}:"
-    f"{settings.database_password}@{settings.database_host}:"
-    f"{settings.database_port}/{settings.database_name}"
-)
+if settings.database_com != "sqlite":
+    DATABASE_URL = (
+        f"postgresql+asyncpg://{settings.database_username}:"
+        f"{settings.database_password}@{settings.database_host}:"
+        f"{settings.database_port}/{settings.database_name}"
+    )
+else:
+    DATABASE_URL = "sqlite+aiosqlite:///./sql_app.db"
 
 # Create async engine
 engine = create_async_engine(DATABASE_URL, echo=True, future=True)

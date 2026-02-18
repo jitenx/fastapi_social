@@ -48,7 +48,15 @@ else:
                     st.success("Account created 🎉")
                     st.switch_page("app.py")
                 else:
-                    st.error(response.json().get("detail", "Signup failed"))
+                    try:
+                        data = response.json()
+                        error_message = data.get("detail", "Signup failed")
+                    except ValueError:
+                        error_message = (
+                            f"Signup failed. Server returned: {response.text}"
+                        )
+
+                    st.error(error_message)
     st.write("Existing User?")
     if st.button("Login"):
         st.switch_page("app.py")

@@ -5,6 +5,7 @@ description = "Social Media"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "aiosqlite>=0.22.1",
     "alembic>=1.18.1",
     "asyncpg>=0.31.0",
     "emailvalidator>=0.3",

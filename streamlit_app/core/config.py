@@ -1,5 +1,5 @@
-# API_BASE_URL = "http://127.0.0.1:8000"
-API_BASE_URL = "https://start-social-04ln.onrender.com"
+API_BASE_URL = "http://127.0.0.1:8000"
+# API_BASE_URL = "https://start-social-04ln.onrender.com"
 LOGIN_ENDPOINT = "/login"
 USERS_ENDPOINT = "/users"
 POSTS_ENDPOINT = "/posts"
