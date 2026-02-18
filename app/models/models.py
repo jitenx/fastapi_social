@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Boolean, ForeignKey, Integer, String, DateTime, func
+from sqlalchemy import Boolean, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database.database import Base
 
@@ -87,9 +87,6 @@ class Vote(Base):
 
     # Typically votes are deleted/re-created rather than updated,
     # but you can add created_at here if you want to track when the vote happened.
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, server_default=func.now()
-    )
 
     # Relationships
     user: Mapped["User"] = relationship("User", back_populates="votes")
