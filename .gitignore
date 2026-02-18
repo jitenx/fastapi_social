@@ -10,8 +10,13 @@ wheels/
 
 # Virtual environments
 .venv
+.idea
+.ruff_cache
+.github
 olds/
 *.env
 docker.env
 calculations.py
 check/
+docker*
+Docker*
