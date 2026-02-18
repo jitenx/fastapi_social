@@ -6,9 +6,18 @@ from core.auth import auth_header, logout
 
 def _handle_response(response):
     if response.status_code == 401:
-        st.error("Session expired. Please login again.")
+        # Only auth-related 401 should logout
         logout()
-    response.raise_for_status()
+        st.error("Session expired. Please login again.")
+        return None
+
+    if not response.ok:
+        try:
+            detail = response.json().get("detail", "Request failed")
+        except Exception:
+            detail = "Request failed"
+        raise Exception(detail)
+
     return response.json() if response.content else None
 
 
@@ -24,9 +33,11 @@ def post(endpoint, payload=None):
     return _handle_response(response)
 
 
-def put(endpoint, payload=None):
-    response = requests.put(
-        f"{API_BASE_URL}{endpoint}", json=payload, headers=auth_header()
+def patch(endpoint, payload=None):
+    response = requests.patch(
+        f"{API_BASE_URL}{endpoint}",
+        json=payload,
+        headers=auth_header(),
     )
     return _handle_response(response)
 

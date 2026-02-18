@@ -1,6 +1,6 @@
 import streamlit as st
 from core.auth import require_auth
-from core.api import get, post, put, delete
+from core.api import get, post, patch, delete
 from ui.sidebar import render_sidebar
 
 # -------------------- AUTH --------------------
@@ -85,11 +85,11 @@ def update_post_dialog(post_data):
         save = col1.form_submit_button("💾 Save")
         cancel = col2.form_submit_button("Cancel")
         if cancel:
-            return
+            st.rerun()
 
     if save:
         with st.spinner("Updating post..."):
-            put(
+            patch(
                 f"/posts/{post_data['id']}",
                 {
                     "title": title,
@@ -107,9 +107,9 @@ def update_post_dialog(post_data):
 def confirm_delete(post_id):
     st.warning("This action cannot be undone.")
     col1, col2 = st.columns(2)
-    if col1.button("Cancel"):
-        return
-    if col2.button("Delete", type="primary"):
+    if col2.button("Cancel"):
+        st.rerun()
+    if col1.button("Delete", type="primary"):
         delete(f"/posts/{post_id}")
         st.toast("Post deleted 🗑️")
         st.rerun()
@@ -189,7 +189,7 @@ for idx, item in enumerate(posts):
                 if col1.button(
                     "🚀 Publish", key=f"pub_{post_id}", use_container_width=True
                 ):
-                    put(
+                    patch(
                         f"/posts/{post_id}",
                         {
                             "title": post_data["title"],

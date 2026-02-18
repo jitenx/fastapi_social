@@ -8,13 +8,15 @@ from sqlalchemy.orm import selectinload
 import app.models.models as models
 import app.schemas.schemas as schemas
 import app.auth.oauth2 as oauth2
-from app.database.database import get_async_db  # async session dependency
+from app.database.database import get_async_db
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
 # -------------------- HELPERS --------------------
-async def format_post_with_votes(post_row, current_user_id):
+
+
+def format_post_with_votes(post_row):
     post, votes, user_voted_count = post_row
     return {
         "Post": post,
@@ -23,10 +25,15 @@ async def format_post_with_votes(post_row, current_user_id):
     }
 
 
+def check_post_owner(post, current_user):
+    if post.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="Not authorized to perform this action",
+        )
+
+
 def get_posts_query(current_user_id: int, search: str = "", owner_only: bool = False):
-    """
-    Returns a SQLAlchemy select statement for posts with vote counts
-    """
     stmt = (
         select(
             models.Post,
@@ -36,7 +43,7 @@ def get_posts_query(current_user_id: int, search: str = "", owner_only: bool = F
             ),
         )
         .outerjoin(models.Vote, models.Vote.post_id == models.Post.id)
-        .options(selectinload(models.Post.owner))  # eagerly load owner
+        .options(selectinload(models.Post.owner))
     )
 
     if owner_only:
@@ -49,37 +56,46 @@ def get_posts_query(current_user_id: int, search: str = "", owner_only: bool = F
     if search:
         stmt = stmt.where(models.Post.title.contains(search))
 
-    stmt = stmt.group_by(models.Post.id).order_by(desc(models.Post.created_at))
-    return stmt
+    return stmt.group_by(models.Post.id).order_by(desc(models.Post.created_at))
+
+
+async def execute_post_query(
+    db: AsyncSession,
+    stmt,
+    limit: int,
+    skip: int,
+):
+    result = await db.execute(stmt.limit(limit).offset(skip))
+    return result.all()
 
 
 # -------------------- GET POSTS --------------------
+
+
 @router.get("", response_model=List[schemas.PostVoted])
 async def get_posts(
     db: AsyncSession = Depends(get_async_db),
     current_user=Depends(oauth2.get_current_user),
-    limit: int = 10000,
+    limit: int = 50,
     skip: int = 0,
     search: Optional[str] = "",
 ):
     stmt = get_posts_query(current_user.id, search)
-    result = await db.execute(stmt.limit(limit).offset(skip))
-    posts = result.all()
-    return [await format_post_with_votes(row, current_user.id) for row in posts]
+    posts = await execute_post_query(db, stmt, limit, skip)
+    return [format_post_with_votes(row) for row in posts]
 
 
 @router.get("/me", response_model=List[schemas.PostVoted])
 async def get_my_posts(
     db: AsyncSession = Depends(get_async_db),
     current_user=Depends(oauth2.get_current_user),
-    limit: int = 10000,
+    limit: int = 50,
     skip: int = 0,
     search: Optional[str] = "",
 ):
     stmt = get_posts_query(current_user.id, search, owner_only=True)
-    result = await db.execute(stmt.limit(limit).offset(skip))
-    posts = result.all()
-    return [await format_post_with_votes(row, current_user.id) for row in posts]
+    posts = await execute_post_query(db, stmt, limit, skip)
+    return [format_post_with_votes(row) for row in posts]
 
 
 @router.get("/{id}", response_model=schemas.PostVoted)
@@ -91,12 +107,16 @@ async def get_post(
     stmt = get_posts_query(current_user.id).where(models.Post.id == id)
     result = await db.execute(stmt)
     post_row = result.first()
+
     if not post_row:
         raise HTTPException(status_code=404, detail=f"Post with id {id} not found")
-    return await format_post_with_votes(post_row, current_user.id)
+
+    return format_post_with_votes(post_row)
 
 
 # -------------------- CREATE POST --------------------
+
+
 @router.post("", response_model=schemas.Post, status_code=status.HTTP_201_CREATED)
 async def create_post(
     post_data: schemas.PostCreate,
@@ -111,30 +131,39 @@ async def create_post(
 
 
 # -------------------- UPDATE POST --------------------
-@router.put("/{id}", response_model=schemas.Post)
-async def update_post(
+
+
+# -------------------- PATCH POST --------------------
+
+
+@router.patch("/{id}", response_model=schemas.Post)
+async def patch_post(
     id: int,
-    post_data: schemas.PostCreate,
+    post_data: schemas.PostUpdate,
     db: AsyncSession = Depends(get_async_db),
     current_user=Depends(oauth2.get_current_user),
 ):
     post = await db.get(models.Post, id)
+
     if not post:
         raise HTTPException(status_code=404, detail=f"Post with id {id} not found")
-    if post.owner_id != current_user.id:
-        raise HTTPException(
-            status_code=403, detail="Not authorized to update this post"
-        )
 
-    for field, value in post_data.model_dump().items():
+    check_post_owner(post, current_user)
+
+    update_data = post_data.model_dump(exclude_unset=True)
+
+    for field, value in update_data.items():
         setattr(post, field, value)
 
     await db.commit()
     await db.refresh(post)
+
     return post
 
 
 # -------------------- DELETE POST --------------------
+
+
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_post(
     id: int,
@@ -142,13 +171,11 @@ async def delete_post(
     current_user=Depends(oauth2.get_current_user),
 ):
     post = await db.get(models.Post, id)
+
     if not post:
         raise HTTPException(status_code=404, detail=f"Post with id {id} not found")
-    if post.owner_id != current_user.id:
-        raise HTTPException(
-            status_code=403, detail="Not authorized to delete this post"
-        )
+
+    check_post_owner(post, current_user)
 
     await db.delete(post)
     await db.commit()
-    return {"detail": "Post deleted"}

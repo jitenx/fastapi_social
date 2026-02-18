@@ -1,6 +1,5 @@
 import streamlit as st
 import requests
-import json
 from core.config import API_BASE_URL, USERS_ENDPOINT
 from core.validators import valid_email
 from core.auth import is_authenticated
@@ -15,24 +14,28 @@ else:
         last = st.text_input("Last Name")
         email = st.text_input("Email")
         password = st.text_input("Password", type="password")
+        confirm_password = st.text_input("Confirm Password", type="password")
         submit = st.form_submit_button("Create Account")
 
     if submit:
-        if not all([first, last, email, password]):
-            st.error("All fields required")
+        if not all([first, last, email, password, confirm_password]):
+            st.error("All fields are required")
+
         elif not valid_email(email):
             st.error("Invalid email")
+
+        elif password != confirm_password:
+            st.error("Passwords do not match")
+
         else:
             response = requests.post(
                 f"{API_BASE_URL}{USERS_ENDPOINT}",
-                data=json.dumps(
-                    {
-                        "first_name": first,
-                        "last_name": last,
-                        "email": email,
-                        "password": password,
-                    }
-                ),
+                json={
+                    "first_name": first,
+                    "last_name": last,
+                    "email": email,
+                    "password": password,
+                },
             )
 
             if response.status_code == 201:

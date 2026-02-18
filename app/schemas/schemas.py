@@ -46,6 +46,17 @@ class UserDelete(BaseModel):
     password: str
 
 
+class UserUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    password: Optional[str] = None
+    current_password: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
 # -------------------- POST SCHEMAS --------------------
 class PostBase(BaseModel):
     title: str
@@ -71,6 +82,15 @@ class PostVoted(BaseModel):
     Post: Post
     votes: int
     user_voted: bool
+
+    class Config:
+        from_attributes = True
+
+
+class PostUpdate(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    published: Optional[bool] = None
 
     class Config:
         from_attributes = True
