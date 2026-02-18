@@ -122,6 +122,14 @@ async def patch_user(
 
     update_data = user_data.model_dump(exclude_unset=True)
 
+    if "email" in update_data:
+        existing_user = await get_user_by_email(db, update_data["email"])
+        if existing_user and existing_user.id != user.id:
+            raise HTTPException(
+                status_code=400,
+                detail="Email already in use",
+            )
+
     # If password is being updated → require current_password
     if "password" in update_data:
         if not user_data.current_password:

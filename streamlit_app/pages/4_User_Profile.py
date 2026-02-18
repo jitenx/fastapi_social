@@ -3,7 +3,7 @@ import time
 from core.auth import require_auth, logout
 from core.api import get, patch, delete
 from ui.sidebar import render_sidebar
-from core.validators import valid_email
+from core.validators import valid_email, check_password_strength
 
 
 require_auth()
@@ -59,7 +59,6 @@ with tab2:
             st.success("✅ Profile updated")
 
 
-# Update Pasw
 with tab3:
     st.subheader("✏️ Update Email")
     with st.form("update_email"):
@@ -67,25 +66,22 @@ with tab3:
 
         col1, col2 = st.columns(2)
         save = col1.form_submit_button("💾 Save")
-        # cancel = col2.form_submit_button("❌ Cancel")
-
-    # if cancel:
-    #     st.session_state.active_tab = "Profile"
-    #     st.rerun()
 
     if save:
-        if not all([email]):
-            st.error("All fields are required")
+        if not email:
+            st.error("Email is required")
+        elif not valid_email(email):
+            st.error("Invalid email")
         else:
-            patch(
+            result = patch(
                 f"/users/{user['id']}",
-                {
-                    "email": email,
-                },
+                {"email": email},
             )
-            st.success("✅ Profile updated — please login again")
-            time.sleep(2)
-            logout()
+            if result:  # Only if patch succeeded
+                st.success("✅ Email updated — please login again")
+                time.sleep(2)
+                logout()
+
 
 with tab4:
     st.subheader("🔐 Change Password")
@@ -104,22 +100,27 @@ with tab4:
 
         elif new_password != confirm_password:
             st.error("New passwords do not match")
-
         else:
-            try:
-                patch(
-                    f"/users/{user['id']}",
-                    {
-                        "password": new_password,
-                        "current_password": current_password,
-                    },
-                )
-                st.success("✅ Password updated — please login again")
-                time.sleep(2)
-                logout()
+            strength_errors = check_password_strength(new_password)
 
-            except Exception as e:
-                st.error(str(e))
+            if strength_errors:
+                st.error("Password must contain:\n- " + "\n- ".join(strength_errors))
+
+            else:
+                try:
+                    patch(
+                        f"/users/{user['id']}",
+                        {
+                            "password": new_password,
+                            "current_password": current_password,
+                        },
+                    )
+                    st.success("✅ Password updated — please login again")
+                    time.sleep(2)
+                    logout()
+
+                except Exception as e:
+                    st.error(str(e))
 
 
 # -------------------- DELETE ACCOUNT --------------------

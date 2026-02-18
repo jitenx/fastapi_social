@@ -24,36 +24,35 @@ def create_post_dialog():
         if not st.session_state.create_title or not st.session_state.create_content:
             st.session_state.create_error = "Title and content are required"
             return
+        else:
+            try:
+                post(
+                    "/posts",
+                    {
+                        "title": st.session_state.create_title,
+                        "content": st.session_state.create_content,
+                        "published": st.session_state.create_published,
+                    },
+                )
+            except Exception as e:
+                st.session_state.create_error = f"Failed to create post: {str(e)}"
+                return
 
-        try:
-            post(
-                "/posts",
-                {
-                    "title": st.session_state.create_title,
-                    "content": st.session_state.create_content,
-                    "published": st.session_state.create_published,
-                },
-            )
-        except Exception as e:
-            st.session_state.create_error = f"Failed to create post: {str(e)}"
-            return
+            # Clear form
+            st.session_state.create_title = ""
+            st.session_state.create_content = ""
+            st.session_state.create_published = False
+            st.session_state.create_error = None
 
-        # Clear form
-        st.session_state.create_title = ""
-        st.session_state.create_content = ""
-        st.session_state.create_published = False
-        st.session_state.create_error = None
-
-        # Flag to refresh feed after dialog closes
-        st.session_state.refresh_feed = True
-        return  # close the dialog
+            # Flag to refresh feed after dialog closes
+            st.session_state.refresh_feed = True
+            return  # close the dialog
 
     # -------------------- FORM --------------------
     with st.form("create_post_form"):
         st.text_input("Title", key="create_title")
         st.text_area("Content", key="create_content")
         st.checkbox("Publish now?", key="create_published")
-
         col1, col2 = st.columns(2)
         create = col1.form_submit_button("Create", on_click=submit_post)
 

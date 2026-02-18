@@ -1,8 +1,9 @@
 import streamlit as st
 import requests
 from core.config import API_BASE_URL, USERS_ENDPOINT
-from core.validators import valid_email
+from core.validators import valid_email, check_password_strength
 from core.auth import is_authenticated
+
 
 if is_authenticated():
     st.switch_page("pages/1_All_Posts.py")
@@ -28,18 +29,26 @@ else:
             st.error("Passwords do not match")
 
         else:
-            response = requests.post(
-                f"{API_BASE_URL}{USERS_ENDPOINT}",
-                json={
-                    "first_name": first,
-                    "last_name": last,
-                    "email": email,
-                    "password": password,
-                },
-            )
+            strength_errors = check_password_strength(password)
 
-            if response.status_code == 201:
-                st.success("Account created 🎉")
-                st.switch_page("app.py")
+            if strength_errors:
+                st.error("Password must contain:\n- " + "\n- ".join(strength_errors))
             else:
-                st.error(response.json().get("detail", "Signup failed"))
+                response = requests.post(
+                    f"{API_BASE_URL}{USERS_ENDPOINT}",
+                    json={
+                        "first_name": first,
+                        "last_name": last,
+                        "email": email,
+                        "password": password,
+                    },
+                )
+
+                if response.status_code == 201:
+                    st.success("Account created 🎉")
+                    st.switch_page("app.py")
+                else:
+                    st.error(response.json().get("detail", "Signup failed"))
+    st.write("Existing User?")
+    if st.button("Login"):
+        st.switch_page("app.py")

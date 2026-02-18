@@ -6,18 +6,22 @@ from core.auth import auth_header, logout
 
 def _handle_response(response):
     if response.status_code == 401:
-        # Only auth-related 401 should logout
-        logout()
         st.error("Session expired. Please login again.")
+        logout()
         return None
 
-    if not response.ok:
+    if not response.ok:  # any other 4xx/5xx
         try:
+            # Try to get detail from response
             detail = response.json().get("detail", "Request failed")
         except Exception:
             detail = "Request failed"
-        raise Exception(detail)
 
+        # Display in Streamlit instead of crashing
+        st.error(f"❌ {detail}")
+        return None
+
+    # Success
     return response.json() if response.content else None
 
 
