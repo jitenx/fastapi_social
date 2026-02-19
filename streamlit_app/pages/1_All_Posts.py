@@ -275,7 +275,7 @@ for idx, item in enumerate(posts):
                 if not user_voted:
                     vote_button_text = f"👍 {vote_label}"
                 else:
-                    vote_button_text = f"👎 {vote_label}"
+                    vote_button_text = f"👎🏻 {vote_label}"
 
                 if col1.button(
                     vote_button_text, key=vote_key, use_container_width=True
@@ -297,7 +297,7 @@ for idx, item in enumerate(posts):
             if not user_voted:
                 vote_button_text = f"👍 {vote_label}"
             else:
-                vote_button_text = f"👎 {vote_label}"
+                vote_button_text = f"👎🏻 {vote_label}"
             if col1.button(vote_button_text, key=vote_key, use_container_width=True):
                 post("/vote", {"post_id": post_id, "dir": direction})
                 st.rerun()

@@ -5,6 +5,8 @@ FASTAPI_PORT=8000
 STREAMLIT_PORT=8501
 
 migrate:
+	@echo "Installing depenecies from requirements.txt"
+	@uv add -r requirements.txt
 	@echo "🗄️  Running database migrations..."
 	@uv run alembic upgrade head
 
