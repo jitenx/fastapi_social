@@ -1,5 +1,4 @@
 
-```markdown
 # 🚀 Social
 
 > A full-stack social platform built with FastAPI and Streamlit, supporting JWT authentication and flexible database configuration (SQLite & PostgreSQL).
