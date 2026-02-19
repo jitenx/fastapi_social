@@ -8,7 +8,47 @@ require_auth()
 current_user = get("/users/profile/me")
 current_user_id = current_user["id"]
 
+
+# -------------------- SHARED CREATE LOGIC --------------------
+def handle_create_post(title, content, published):
+    if not title or not content:
+        return "Title and content are required"
+
+    try:
+        post(
+            "/posts",
+            {"title": title, "content": content, "published": published},
+        )
+    except Exception as e:
+        return f"Failed to create post: {str(e)}"
+
+    return None  # success
+
+
+# -------------------- SIDEBAR CREATE POST --------------------
+with st.sidebar.expander("➕ Quick Post", expanded=False):
+    with st.form("sidebar_create_form", clear_on_submit=True):
+        sidebar_title = st.text_input("Title")
+        sidebar_content = st.text_area("Content")
+        sidebar_published = st.checkbox("Publish now?")
+
+        submitted_sidebar = st.form_submit_button("Create")
+
+    if submitted_sidebar:
+        error = handle_create_post(
+            sidebar_title,
+            sidebar_content,
+            sidebar_published,
+        )
+
+        if error:
+            st.error(error)
+        else:
+            st.toast("Post created 🎉")
+            st.rerun()
+
 render_sidebar()
+
 
 st.title("📰 Feed")
 st.divider()
@@ -17,66 +57,25 @@ st.divider()
 # -------------------- CREATE POST DIALOG --------------------
 @st.dialog("➕ Create Post")
 def create_post_dialog():
-    # Initialize session_state
-    for key in [
-        "create_error",
-        "create_title",
-        "create_content",
-        "create_published",
-        "refresh_feed",
-    ]:
-        if key not in st.session_state:
-            st.session_state[key] = "" if "title" in key or "content" in key else False
+    with st.form("create_post_form", clear_on_submit=True):
+        create_title = st.text_input("Title")
+        create_content = st.text_area("Content")
+        create_published = st.checkbox("Publish now?")
 
-    # Callback to handle post creation
-    def submit_post():
-        title = st.session_state.create_title
-        content = st.session_state.create_content
-        published = st.session_state.create_published
+        submitted = st.form_submit_button("Create")
 
-        # Validation
-        if not title or not content:
-            st.session_state.create_error = "Title and content are required"
-            return
+    if submitted:
+        error = handle_create_post(
+            create_title,
+            create_content,
+            create_published,
+        )
 
-        try:
-            post(
-                "/posts",
-                {"title": title, "content": content, "published": published},
-            )
-        except Exception as e:
-            st.session_state.create_error = f"Failed to create post: {str(e)}"
-            return
-
-        # Success → set flags to reset form after render
-        st.session_state.create_error = None
-        st.session_state.create_title = ""
-        st.session_state.create_content = ""
-        st.session_state.create_published = False
-        st.session_state.refresh_feed = True
-        st.session_state._rerun_needed = True  # custom flag
-
-    # -------------------- FORM --------------------
-    with st.form("create_post_form"):
-        st.text_input("Title", key="create_title")
-        st.text_area("Content", key="create_content")
-        st.checkbox("Publish now?", key="create_published")
-
-        col1, col2 = st.columns(2)
-        col1.form_submit_button("Create", on_click=submit_post)
-        cancel = col2.form_submit_button("Cancel")
-        if cancel:
+        if error:
+            st.error(error)
+        else:
+            st.toast("Post created 🎉")
             st.rerun()
-
-    # -------------------- SHOW ERROR --------------------
-    if st.session_state.create_error:
-        st.error(st.session_state.create_error)
-
-    # -------------------- RERUN IF NEEDED --------------------
-    # This runs outside the callback
-    if "_rerun_needed" in st.session_state and st.session_state._rerun_needed:
-        st.session_state._rerun_needed = False
-        st.rerun()
 
 
 # -------------------- UPDATE POST DIALOG --------------------
