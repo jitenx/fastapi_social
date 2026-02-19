@@ -2,6 +2,47 @@ import streamlit as st
 from core.auth import require_auth
 from core.api import get, post, patch, delete
 from ui.sidebar import render_sidebar
+from datetime import datetime
+
+
+def time_ago(timestamp_str):
+    """
+    Convert ISO 8601 timestamp string to human-friendly 'X second(s)/minute(s)/hour(s)/day(s)/year(s) ago'.
+    Supports:
+      - 'YYYY-MM-DDTHH:MM:SS'
+      - 'YYYY-MM-DDTHH:MM:SS.microseconds'
+    """
+    now = datetime.now()
+    dt = None
+
+    # Try parsing with microseconds
+    for fmt in ("%Y-%m-%dT%H:%M:%S.%f", "%Y-%m-%dT%H:%M:%S"):
+        try:
+            dt = datetime.strptime(timestamp_str, fmt)
+            break
+        except ValueError:
+            continue
+
+    if dt is None:
+        return timestamp_str  # fallback if parsing fails
+
+    diff = now - dt
+    seconds = int(diff.total_seconds())
+
+    if seconds < 60:
+        return f"{seconds} second{'s' if seconds != 1 else ''} ago"
+    minutes = seconds // 60
+    if minutes < 60:
+        return f"{minutes} minute{'s' if minutes != 1 else ''} ago"
+    hours = minutes // 60
+    if hours < 24:
+        return f"{hours} hour{'s' if hours != 1 else ''} ago"
+    days = hours // 24
+    if days < 365:
+        return f"{days} day{'s' if days != 1 else ''} ago"
+    years = days // 365
+    return f"{years} year{'s' if years != 1 else ''} ago"
+
 
 # -------------------- AUTH --------------------
 require_auth()
@@ -183,9 +224,6 @@ for idx, item in enumerate(st.session_state.posts_loaded):
 
         # Content
         st.markdown(display_content)
-        st.caption(
-            f"👤 {post_data['owner']['first_name']} {post_data['owner']['last_name']}"
-        )
 
         # Read more / show less
         if show_read_more:
@@ -196,6 +234,9 @@ for idx, item in enumerate(st.session_state.posts_loaded):
             if st.button("Show less", key=f"less_{post_id}"):
                 st.session_state[expand_key] = False
                 st.rerun()
+        st.caption(
+            f"👤 {post_data['owner']['first_name']} {post_data['owner']['last_name']} • {time_ago(post_data['created_at'])}"
+        )
 
         # Draft badge
         if is_owner and not is_published:
