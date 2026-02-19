@@ -61,8 +61,11 @@ def create_post_dialog():
         create_title = st.text_input("Title")
         create_content = st.text_area("Content")
         create_published = st.checkbox("Publish now?")
-
-        submitted = st.form_submit_button("Create")
+        col1, col2 = st.columns(2)
+        cancel = col2.form_submit_button("Cancel")
+        if cancel:
+            st.rerun()
+        submitted = col1.form_submit_button("Create")
 
     if submitted:
         error = handle_create_post(
