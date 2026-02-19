@@ -1,3 +1,8 @@
+Perfect! Here’s your **fully updated, production-ready `README.md`**, now with the **exact project structure** you provided. You can copy this directly into your project.
+
+---
+
+```markdown
 # 🚀 Social
 
 > A full-stack social platform built with FastAPI and Streamlit, supporting JWT authentication and flexible database configuration (SQLite & PostgreSQL).
@@ -43,21 +48,30 @@ https://jitenxmedia.onrender.com
 
 ## 🏗 Architecture
 
+```
+
 Streamlit (Frontend)
 ↓
 FastAPI (REST API)
 ↓
 Database (SQLite / PostgreSQL)
 
+```
 
 - Streamlit handles UI & user interactions
 - FastAPI handles authentication & API logic
-- Database stores users & data
+- Database stores users & posts
 - JWT secures protected endpoints
 
 ---
 
 ## 📂 Project Structure
+<<<<<<< HEAD
+=======
+
+```
+
+>>>>>>> b7d60ac (added readme file)
 .
 ├── app/
 │   ├── app.py                # FastAPI main app
@@ -75,6 +89,7 @@ Database (SQLite / PostgreSQL)
 ├── Makefile                  # Commands to run backend/frontend
 └── README.md                 # Project documentation
 
+```
 
 ---
 
@@ -84,28 +99,30 @@ The application uses **Pydantic Settings** for environment management.
 
 Create a `.env` file for local development:
 
+```
 
-
-DATABASE_HOST=xxxx
+DATABASE_HOST=localhost
 DATABASE_PORT=5432
-DATABASE_NAME=xxxx
-DATABASE_USERNAME=xxxx
-DATABASE_PASSWORD=xxxx
+DATABASE_NAME=social
+DATABASE_USERNAME=jitu
+DATABASE_PASSWORD=jitu
 ALGORITHM=HS256
-SECRET_KEY=xxxx
+SECRET_KEY=hgsfdhfjh455gdjhjgjsd
 ACCESS_TOKEN_EXPIRE_MINUTES=60
 DATABASE_COM=sqlite
-API_BASE_URL=http://127.0.0.1:8000
+API_BASE_URL=[http://127.0.0.1:8000](http://127.0.0.1:8000)
 
+```
 
 ### Production (Render)
 
 Set the same variables inside:
 
-
+```
 
 Render Dashboard → Environment → Environment Variables
 
+```
 
 ---
 
@@ -115,17 +132,19 @@ The project supports two database modes:
 
 ### 🟢 SQLite (Local Development)
 
-
+```
 
 DATABASE_COM=sqlite
 
+```
 
 ### 🔵 PostgreSQL (Production Recommended)
 
-
+```
 
 DATABASE_COM=postgresql
 
+````
 
 Database switching is controlled via environment variables.
 
@@ -135,7 +154,7 @@ Database switching is controlled via environment variables.
 
 - JWT-based authentication
 - Algorithm: **HS256**
-- Configurable expiration time
+- Configurable token expiration
 - Protected routes require Bearer Token
 - Token stored and reused by frontend
 
@@ -151,31 +170,38 @@ This project uses a **Makefile** for easier development.
 
 ```bash
 make migrate
+````
 
-2️⃣ Run Full Application (Backend + Frontend)
+---
+
+### 2️⃣ Run Full Application (Backend + Frontend)
+
+```bash
 make run
-
+```
 
 After running:
 
-🔹 FastAPI → http://0.0.0.0:8000
+* 🔹 FastAPI → [http://0.0.0.0:8000](http://0.0.0.0:8000)
+* 🔹 Streamlit → [http://localhost:8501](http://localhost:8501)
 
-🔹 Streamlit → http://localhost:8501
+---
 
-🔥 Available Make Commands
-Run Everything
-make run
+## 🔥 Available Make Commands
 
-Run Only FastAPI
-make fastapi
+| Command          | Description                                    |
+| ---------------- | ---------------------------------------------- |
+| `make run`       | Run both FastAPI + Streamlit                   |
+| `make fastapi`   | Run only FastAPI                               |
+| `make streamlit` | Run only Streamlit                             |
+| `make stop`      | Stop all running services                      |
+| `make migrate`   | Install dependencies & run database migrations |
 
-Run Only Streamlit
-make streamlit
+---
 
-Stop All Services
-make stop
+## 📜 Makefile
 
-📜 Makefile
+```makefile
 .PHONY: run fastapi streamlit stop migrate
 
 FASTAPI_HOST=0.0.0.0
@@ -220,6 +246,7 @@ stop:
 	@pkill -f "streamlit.web.cli" || true
 	@rm -f .fastapi.pid .streamlit.pid
 	@echo "✅ All services stopped."
+<<<<<<< HEAD
 
 
 🧪 API Endpoints (Example)
@@ -268,6 +295,55 @@ Jitenx
 
 Give it a ⭐ on GitHub and feel free to fork or contribute.
 
+=======
+```
+>>>>>>> b7d60ac (added readme file)
 
 ---
 
+## 🧪 API Endpoints (Example)
+
+| Method | Endpoint  | Description             |
+| ------ | --------- | ----------------------- |
+| POST   | /login    | User login              |
+| POST   | /register | User registration       |
+| GET    | /users    | Get users (Protected)   |
+| POST   | /posts    | Create post (Protected) |
+
+---
+
+## 🧠 Key Features
+
+* ✅ Clean architecture
+* ✅ Environment-based configuration
+* ✅ JWT authentication
+* ✅ SQLite & PostgreSQL support
+* ✅ Alembic migrations
+* ✅ Full-stack integration
+* ✅ Makefile-based development workflow
+* ✅ Production deployment on Render
+
+---
+
+## 📈 Future Improvements
+
+* Like & comment system
+* User profile management
+* Role-based access control
+* Docker containerization
+* CI/CD integration
+* Android / Flutter mobile client
+
+---
+
+## 👨‍💻 Author
+
+**Jiten**
+
+---
+
+## ⭐ If You Like This Project
+
+Give it a ⭐ on GitHub and feel free to fork or contribute.
+
+```
