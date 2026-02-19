@@ -288,4 +288,3 @@ stop:
 
 Give it a ⭐ on GitHub and feel free to fork or contribute.
 
-```
