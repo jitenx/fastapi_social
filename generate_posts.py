@@ -7,11 +7,11 @@ import aiosqlite
 fake = Faker()
 
 NUM_POSTS = 1000
-NUM_USERS = 20  # must match your actual users
+NUM_USERS = 10  # must match your actual users
 DB_FILE = "sql_app.db"
 
 # Current timestamp
-now = datetime.now()
+now = datetime.now() - timedelta(hours=5, minutes=30)
 past_year = now - timedelta(days=365)
 
 # List of valid owner IDs
@@ -22,7 +22,7 @@ posts_to_insert = []
 
 for _ in range(NUM_POSTS):
     title = fake.sentence(nb_words=random.randint(3, 20)).replace("'", "''")
-    content = "\n\n".join(fake.paragraphs(nb=random.randint(5, 20))).replace("'", "''")
+    content = "\n\n".join(fake.paragraphs(nb=random.randint(2, 8))).replace("'", "''")
     published = 1 if random.choice([True, False]) else 0
 
     created_dt = fake.date_time_between_dates(

@@ -2,46 +2,7 @@ import streamlit as st
 from core.auth import require_auth
 from core.api import get, post, patch, delete
 from ui.sidebar import render_sidebar
-from datetime import datetime
-
-
-def time_ago(timestamp_str):
-    """
-    Convert ISO 8601 timestamp string to human-friendly 'X second(s)/minute(s)/hour(s)/day(s)/year(s) ago'.
-    Supports:
-      - 'YYYY-MM-DDTHH:MM:SS'
-      - 'YYYY-MM-DDTHH:MM:SS.microseconds'
-    """
-    now = datetime.now()
-    dt = None
-
-    # Try parsing with microseconds
-    for fmt in ("%Y-%m-%dT%H:%M:%S.%f", "%Y-%m-%dT%H:%M:%S"):
-        try:
-            dt = datetime.strptime(timestamp_str, fmt)
-            break
-        except ValueError:
-            continue
-
-    if dt is None:
-        return timestamp_str  # fallback if parsing fails
-
-    diff = now - dt
-    seconds = int(diff.total_seconds())
-
-    if seconds < 60:
-        return f"{seconds} second{'s' if seconds != 1 else ''} ago"
-    minutes = seconds // 60
-    if minutes < 60:
-        return f"{minutes} minute{'s' if minutes != 1 else ''} ago"
-    hours = minutes // 60
-    if hours < 24:
-        return f"{hours} hour{'s' if hours != 1 else ''} ago"
-    days = hours // 24
-    if days < 365:
-        return f"{days} day{'s' if days != 1 else ''} ago"
-    years = days // 365
-    return f"{years} year{'s' if years != 1 else ''} ago"
+from core.post_utils import time_ago
 
 
 # -------------------- AUTH --------------------
@@ -65,9 +26,9 @@ def handle_create_post(title, content, published):
 # -------------------- SIDEBAR QUICK POST --------------------
 with st.sidebar.expander("➕ Quick Post", expanded=False):
     with st.form("sidebar_create_form", clear_on_submit=True):
-        sidebar_title = st.text_input("Title")
-        sidebar_content = st.text_area("Content")
-        sidebar_published = st.checkbox("Publish now?")
+        sidebar_title = st.text_input("Title").strip()
+        sidebar_content = st.text_area("Content").strip()
+        sidebar_published = st.checkbox("Publish now?", value=True)
         submitted_sidebar = st.form_submit_button("Create")
 
     if submitted_sidebar:
@@ -91,9 +52,9 @@ st.divider()
 @st.dialog("➕ Create Post")
 def create_post_dialog():
     with st.form("create_post_form", clear_on_submit=True):
-        create_title = st.text_input("Title")
-        create_content = st.text_area("Content")
-        create_published = st.checkbox("Publish now?")
+        create_title = st.text_input("Title").strip()
+        create_content = st.text_area("Content").strip()
+        create_published = st.checkbox("Publish now?", value=True)
         col1, col2 = st.columns(2)
         cancel = col2.form_submit_button("Cancel")
         submitted = col1.form_submit_button("Create")
@@ -122,8 +83,8 @@ def update_post_dialog(post_data):
         st.error("You are not allowed to edit this post.")
         return
     with st.form("update_post_form"):
-        title = st.text_input("Title", post_data["title"])
-        content = st.text_area("Content", post_data["content"])
+        title = st.text_input("Title", post_data["title"]).strip()
+        content = st.text_area("Content", post_data["content"]).strip()
         published = st.checkbox("Published", post_data["published"])
         col1, col2 = st.columns(2)
         save = col1.form_submit_button("💾 Save")
@@ -131,15 +92,18 @@ def update_post_dialog(post_data):
         if cancel:
             st.rerun()
     if save:
-        with st.spinner("Updating post..."):
-            patch(
-                f"/posts/{post_data['id']}",
-                {"title": title, "content": content, "published": published},
-            )
-        st.toast("Post updated ✅")
-        st.session_state.posts_loaded = []
-        st.session_state.post_skip = 0
-        st.rerun()
+        if not title or not content:
+            st.error("Title and content are required")
+        else:
+            with st.spinner("Updating post..."):
+                patch(
+                    f"/posts/{post_data['id']}",
+                    {"title": title, "content": content, "published": published},
+                )
+            st.toast("Post updated ✅")
+            st.session_state.posts_loaded = []
+            st.session_state.post_skip = 0
+            st.rerun()
 
 
 @st.dialog("🗑️ Confirm Delete")
