@@ -1,0 +1,272 @@
+# 🚀 Social
+
+> A full-stack social platform built with FastAPI and Streamlit, supporting JWT authentication and flexible database configuration (SQLite & PostgreSQL).
+
+---
+
+## 📌 Overview
+
+**Social** is a modern full-stack web application built using:
+
+- ⚡ FastAPI (Backend API)
+- 🎨 Streamlit (Frontend UI)
+- 🗄 SQLite / PostgreSQL (Database)
+- 🔐 JWT Authentication
+- 🔄 Alembic (Database Migrations)
+- 🚀 Render (Deployment)
+- 📦 uv (Dependency & Runtime Manager)
+
+The project demonstrates clean architecture, environment-based configuration, authentication, and full-stack integration.
+
+---
+
+## 🌍 Live Deployment
+
+🔗 **Production URL:**  
+https://jitenxmedia.onrender.com
+
+---
+
+## 🛠 Tech Stack
+
+| Layer        | Technology |
+|-------------|------------|
+| Backend     | FastAPI |
+| Frontend    | Streamlit |
+| Database    | SQLite / PostgreSQL |
+| Auth        | JWT (HS256) |
+| Migrations  | Alembic |
+| Deployment  | Render |
+| Runtime     | uv |
+
+---
+
+## 🏗 Architecture
+
+Streamlit (Frontend)
+↓
+FastAPI (REST API)
+↓
+Database (SQLite / PostgreSQL)
+
+
+- Streamlit handles UI & user interactions
+- FastAPI handles authentication & API logic
+- Database stores users & data
+- JWT secures protected endpoints
+
+---
+
+## 📂 Project Structure
+
+├── app/
+│ ├── app.py
+│ ├── models.py
+│ ├── schemas.py
+│ ├── database.py
+│ ├── configsettings.py
+│ └── routes/
+│
+├── streamlit_app/
+│ └── app.py
+│
+├── alembic/
+├── requirements.txt
+├── Makefile
+└── README.md
+
+
+---
+
+## ⚙️ Environment Configuration
+
+The application uses **Pydantic Settings** for environment management.
+
+Create a `.env` file for local development:
+
+
+
+DATABASE_HOST=xxxx
+DATABASE_PORT=5432
+DATABASE_NAME=xxxx
+DATABASE_USERNAME=xxxx
+DATABASE_PASSWORD=xxxx
+ALGORITHM=HS256
+SECRET_KEY=xxxx
+ACCESS_TOKEN_EXPIRE_MINUTES=60
+DATABASE_COM=sqlite
+API_BASE_URL=http://127.0.0.1:8000
+
+
+### Production (Render)
+
+Set the same variables inside:
+
+
+
+Render Dashboard → Environment → Environment Variables
+
+
+---
+
+## 🗄 Database Support
+
+The project supports two database modes:
+
+### 🟢 SQLite (Local Development)
+
+
+
+DATABASE_COM=sqlite
+
+
+### 🔵 PostgreSQL (Production Recommended)
+
+
+
+DATABASE_COM=postgresql
+
+
+Database switching is controlled via environment variables.
+
+---
+
+## 🔐 Authentication System
+
+- JWT-based authentication
+- Algorithm: **HS256**
+- Configurable expiration time
+- Protected routes require Bearer Token
+- Token stored and reused by frontend
+
+---
+
+## 🚀 Running the Project Locally
+
+This project uses a **Makefile** for easier development.
+
+---
+
+### 1️⃣ Install Dependencies & Run Migrations
+
+```bash
+make migrate
+
+2️⃣ Run Full Application (Backend + Frontend)
+make run
+
+
+After running:
+
+🔹 FastAPI → http://0.0.0.0:8000
+
+🔹 Streamlit → http://localhost:8501
+
+🔥 Available Make Commands
+Run Everything
+make run
+
+Run Only FastAPI
+make fastapi
+
+Run Only Streamlit
+make streamlit
+
+Stop All Services
+make stop
+
+📜 Makefile
+.PHONY: run fastapi streamlit stop migrate
+
+FASTAPI_HOST=0.0.0.0
+FASTAPI_PORT=8000
+STREAMLIT_PORT=8501
+
+migrate:
+	@echo "Installing depenecies from requirements.txt"
+	@uv add -r requirements.txt
+	@echo "🗄️  Running database migrations..."
+	@uv run alembic upgrade head
+
+run: migrate
+	@echo "🚀 Starting FastAPI..."
+	@uv run uvicorn app.app:app --host $(FASTAPI_HOST) --port $(FASTAPI_PORT) --reload & \
+	echo $$! > .fastapi.pid
+	@echo "🌟 Starting Streamlit..."
+	@uv run streamlit run streamlit_app/app.py --server.port $(STREAMLIT_PORT) & \
+	echo $$! > .streamlit.pid
+	@echo ""
+	@echo "✅ Services started!"
+	@echo "FastAPI: http://$(FASTAPI_HOST):$(FASTAPI_PORT)"
+	@echo "Streamlit: http://localhost:$(STREAMLIT_PORT)"
+	@echo ""
+	@echo "ℹ️  Use 'make stop' to stop both services."
+	@echo ""
+	@wait
+
+fastapi: migrate
+	@echo "🚀 Starting FastAPI only..."
+	@uv run uvicorn app.app:app --host $(FASTAPI_HOST) --port $(FASTAPI_PORT) --reload
+
+streamlit:
+	@echo "🌟 Starting Streamlit only..."
+	@uv run streamlit run streamlit_app/app.py --server.port $(STREAMLIT_PORT)
+
+stop:
+	@echo "🛑 Stopping FastAPI..."
+	@kill $$(cat .fastapi.pid) 2>/dev/null || true
+	@echo "🛑 Stopping Streamlit..."
+	@kill $$(cat .streamlit.pid) 2>/dev/null || true
+	@pkill -f "streamlit.web.cli" || true
+	@rm -f .fastapi.pid .streamlit.pid
+	@echo "✅ All services stopped."
+
+🧪 API Endpoints (Example)
+Method	Endpoint	Description
+POST	/login	User login
+POST	/register	User registration
+GET	/users	Get users (Protected)
+POST	/posts	Create post (Protected)
+🧠 Key Features
+
+✅ Clean architecture
+
+✅ Environment-based configuration
+
+✅ JWT authentication
+
+✅ SQLite & PostgreSQL support
+
+✅ Alembic migrations
+
+✅ Full-stack integration
+
+✅ Makefile-based development workflow
+
+✅ Production deployment on Render
+
+📈 Future Improvements
+
+Like & comment system
+
+User profile management
+
+Role-based access control
+
+Docker containerization
+
+CI/CD integration
+
+Android / Flutter mobile client
+
+👨‍💻 Author
+
+Jitenx
+
+⭐ If You Like This Project
+
+Give it a ⭐ on GitHub and feel free to fork or contribute.
+
+
+---
+
