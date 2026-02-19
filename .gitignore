@@ -20,3 +20,4 @@ calculations.py
 check/
 docker*
 Docker*
+sql_app.db
