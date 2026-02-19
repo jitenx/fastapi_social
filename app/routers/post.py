@@ -80,6 +80,12 @@ async def get_posts(
     skip: int = 0,
     search: Optional[str] = "",
 ):
+    """
+    Fetch posts with pagination:
+    - `limit`: number of posts to fetch
+    - `skip`: number of posts to skip (offset)
+    - `search`: optional search string
+    """
     stmt = get_posts_query(current_user.id, search)
     posts = await execute_post_query(db, stmt, limit, skip)
     return [format_post_with_votes(row) for row in posts]
