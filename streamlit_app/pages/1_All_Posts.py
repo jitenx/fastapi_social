@@ -3,44 +3,6 @@ from core.auth import require_auth
 from core.api import get, post, patch, delete
 from ui.sidebar import render_sidebar
 
-
-st.markdown(
-    """
-<style>
-
-/* Base vote button */
-button[data-testid="stButton"] {
-    border-radius: 999px !important;
-    font-weight: 500 !important;
-    transition: all 0.2s ease-in-out !important;
-}
-
-/* Hover animation */
-button[data-testid="stButton"]:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
-}
-
-/* Upvote style */
-.vote-up button {
-    background-color: #EEF2FF !important;
-    color: #3730A3 !important;
-    border: 1px solid #C7D2FE !important;
-}
-
-/* Downvote style (when user voted) */
-.vote-down button {
-    background-color: #FEE2E2 !important;
-    color: #991B1B !important;
-    border: 1px solid #FCA5A5 !important;
-}
-
-</style>
-""",
-    unsafe_allow_html=True,
-)
-
-
 # -------------------- AUTH --------------------
 require_auth()
 current_user = get("/users/profile/me")
@@ -213,55 +175,90 @@ for idx, item in enumerate(posts):
     else:
         display_content = full_content
         show_read_more = False
+    with st.container(border=True):
+        # --- HEADER ROW (Title + Likes on Right) ---
+        header_col1, header_col2 = st.columns([5, 1])
 
-    # -------------------- CARD --------------------
-    with st.container():
-        col1, col2 = st.columns([5, 1])
+        with header_col1:
+            st.subheader(post_data["title"])
+        if votes > 0:
+            with header_col2:
+                st.markdown(
+                    f"""
+                    <div style="text-align: right; font-weight: bold; font-size: 16px;">
+                        👍 {votes}
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
-    with col1:
-        st.markdown(f"### {post_data['title']}")
-
-    with col2:
-        st.markdown(f"👍 **{votes}**")
-
-    st.markdown(display_content)
-    st.caption(
-        f"👤 {post_data['owner']['first_name']} {post_data['owner']['last_name']}"
-    )
-    # -------------------- READ MORE --------------------
-    if show_read_more:
-        if st.button(
-            "Read more",
-            key=f"read_{post_id}",
-            use_container_width=False,
-        ):
-            st.session_state[expand_key] = True
-            st.rerun()
-
-    if show_full and len(full_content) > preview_limit:
-        if st.button(
-            "Show less",
-            key=f"less_{post_id}",
-            use_container_width=False,
-        ):
-            st.session_state[expand_key] = False
-            st.rerun()
-
-    # -------------------- DRAFT BADGE --------------------
-    if is_owner and not is_published:
-        st.warning("📝 Draft — Not Published")
-
-    # -------------------- ACTION ROW --------------------
-    col1, col2, col3 = st.columns([1, 1, 1])
-
-    vote_text = "👎" if user_voted else "👍"
-
-    if is_owner:
-        if not is_published:
-            if col1.button(
-                "🚀 Publish", key=f"pub_{post_id}", use_container_width=True
+        # --- CONTENT ---
+        st.markdown(display_content)
+        st.caption(
+            f"👤 {post_data['owner']['first_name']} {post_data['owner']['last_name']}"
+        )
+        # -------------------- READ MORE --------------------
+        if show_read_more:
+            if st.button(
+                "Read more",
+                key=f"read_{post_id}",
+                use_container_width=False,
             ):
-                with st.spinner("Publishing..."):
+                st.session_state[expand_key] = True
+                st.rerun()
+
+        if show_full and len(full_content) > preview_limit:
+            if st.button(
+                "Show less",
+                key=f"less_{post_id}",
+                use_container_width=False,
+            ):
+                st.session_state[expand_key] = False
+                st.rerun()
+
+            # Draft badge
+            if is_owner and not is_published:
+                st.warning("📝 Draft (Not Published)")
+
+            # Vote state
+            if user_voted:
+                vote_label = "Remove Vote"
+                vote_color = "#ff4b4b"
+                direction = 0
+            else:
+                vote_label = "Vote"
+                vote_color = "#00c853"
+                direction = 1
+
+            vote_key = f"vote_{post_id}_{idx}"
+
+            # Style vote button
+            st.markdown(
+                f"""
+                <style>
+                button[data-testid="stButton"][data-key="{vote_key}"] {{
+                    background-color: {vote_color} !important;
+                    color: white !important;
+                    border: none !important;
+                }}
+                button[data-testid="stButton"][data-key="{vote_key}"]:hover {{
+                    background-color: {vote_color} !important;
+                    opacity: 0.9 !important;
+                }}
+                </style>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        # -------------------- ACTION ROW --------------------
+        if is_owner:
+            col1, col2, col3 = st.columns([1, 1, 1])
+
+            # Column 1: Vote or Publish
+            if not is_published:
+                if col1.button(
+                    "🚀 Publish", key=f"pub_{post_id}", use_container_width=True
+                ):
                     patch(
                         f"/posts/{post_id}",
                         {
@@ -270,29 +267,40 @@ for idx, item in enumerate(posts):
                             "published": True,
                         },
                     )
-                st.success("Post published 🚀")
-                st.balloons()
-                st.rerun()
+                    st.toast("Post published successfully 🚀")
+                    st.rerun()
+            else:
+                if not user_voted:
+                    vote_button_text = f"👍 {vote_label}"
+                else:
+                    vote_button_text = f"👎 {vote_label}"
+
+                if col1.button(
+                    vote_button_text, key=vote_key, use_container_width=True
+                ):
+                    post("/vote", {"post_id": post_id, "dir": direction})
+                    st.rerun()
+
+            # Column 2: Update
+            if col2.button("✏️ Update", key=f"upd_{post_id}", use_container_width=True):
+                update_post_dialog(post_data)
+
+            # Column 3: Delete
+            if col3.button("🗑️ Delete", key=f"del_{post_id}", use_container_width=True):
+                confirm_delete(post_id)
 
         else:
-            if col1.button(vote_text, key=vote_key, use_container_width=True):
+            # Non-owner: center vote button
+            col1, col2, col3 = st.columns([1, 1, 1])
+            if not user_voted:
+                vote_button_text = f"👍 {vote_label}"
+            else:
+                vote_button_text = f"👎 {vote_label}"
+            if col1.button(vote_button_text, key=vote_key, use_container_width=True):
                 post("/vote", {"post_id": post_id, "dir": direction})
                 st.rerun()
 
-        if col2.button("✏️ Update", key=f"upd_{post_id}", use_container_width=True):
-            update_post_dialog(post_data)
-
-        if col3.button("🗑️ Delete", key=f"del_{post_id}", use_container_width=True):
-            with st.spinner("Deleting..."):
-                confirm_delete(post_id)
-            st.toast("Post deleted")
-            st.rerun()
-
-    else:
-        if col1.button(vote_text, key=vote_key, use_container_width=True):
-            post("/vote", {"post_id": post_id, "dir": direction})
-            st.rerun()
-
+    st.markdown("<br>", unsafe_allow_html=True)
 
 # -------------------- REFRESH FEED AFTER CREATE --------------------
 if st.session_state.get("refresh_feed"):
