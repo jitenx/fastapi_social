@@ -58,22 +58,22 @@ Database (SQLite / PostgreSQL)
 ---
 
 ## 📂 Project Structure
-
+.
 ├── app/
-│ ├── app.py
-│ ├── models.py
-│ ├── schemas.py
-│ ├── database.py
-│ ├── configsettings.py
-│ └── routes/
+│   ├── app.py                # FastAPI main app
+│   ├── models.py             # Database models
+│   ├── schemas.py            # Pydantic schemas
+│   ├── database.py           # Database connection
+│   ├── configsettings.py     # Pydantic settings / environment
+│   └── routes/               # API route modules
 │
 ├── streamlit_app/
-│ └── app.py
+│   └── app.py                # Streamlit frontend
 │
-├── alembic/
-├── requirements.txt
-├── Makefile
-└── README.md
+├── alembic/                  # Database migration files
+├── requirements.txt          # Python dependencies
+├── Makefile                  # Commands to run backend/frontend
+└── README.md                 # Project documentation
 
 
 ---
@@ -220,6 +220,7 @@ stop:
 	@pkill -f "streamlit.web.cli" || true
 	@rm -f .fastapi.pid .streamlit.pid
 	@echo "✅ All services stopped."
+
 
 🧪 API Endpoints (Example)
 Method	Endpoint	Description
