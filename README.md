@@ -66,12 +66,9 @@ Database (SQLite / PostgreSQL)
 ---
 
 ## 📂 Project Structure
-<<<<<<< HEAD
-=======
 
 ```
 
->>>>>>> b7d60ac (added readme file)
 .
 ├── app/
 │   ├── app.py                # FastAPI main app
@@ -246,58 +243,7 @@ stop:
 	@pkill -f "streamlit.web.cli" || true
 	@rm -f .fastapi.pid .streamlit.pid
 	@echo "✅ All services stopped."
-<<<<<<< HEAD
-
-
-🧪 API Endpoints (Example)
-Method	Endpoint	Description
-POST	/login	User login
-POST	/register	User registration
-GET	/users	Get users (Protected)
-POST	/posts	Create post (Protected)
-🧠 Key Features
-
-✅ Clean architecture
-
-✅ Environment-based configuration
-
-✅ JWT authentication
-
-✅ SQLite & PostgreSQL support
-
-✅ Alembic migrations
-
-✅ Full-stack integration
-
-✅ Makefile-based development workflow
-
-✅ Production deployment on Render
-
-📈 Future Improvements
-
-Like & comment system
-
-User profile management
-
-Role-based access control
-
-Docker containerization
-
-CI/CD integration
-
-Android / Flutter mobile client
-
-👨‍💻 Author
-
-Jitenx
-
-⭐ If You Like This Project
-
-Give it a ⭐ on GitHub and feel free to fork or contribute.
-
-=======
 ```
->>>>>>> b7d60ac (added readme file)
 
 ---
 
