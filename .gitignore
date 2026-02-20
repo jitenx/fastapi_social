@@ -25,3 +25,4 @@ generate_users.py
 generate_posts.py
 generate_votes.py
 *.sql
+tests/
