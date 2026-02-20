@@ -7,7 +7,6 @@ pydantic-settings
 alembic
 pytest
 ruff
-streamlit
 asyncpg
 aiosqlite
 faker
