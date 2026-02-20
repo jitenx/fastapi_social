@@ -1,10 +1,10 @@
 from typing import List, Optional
-
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select, func, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-
+from sqlalchemy import or_, and_
 import app.models.models as models
 import app.schemas.schemas as schemas
 import app.auth.oauth2 as oauth2
@@ -33,7 +33,21 @@ def check_post_owner(post, current_user):
         )
 
 
-def get_posts_query(current_user_id: int, search: str = "", owner_only: bool = False):
+def get_posts_query(
+    current_user_id: int,
+    search: str = "",
+    owner_only: bool = False,
+    start_date: Optional[datetime] = None,
+    end_date: Optional[datetime] = None,
+):
+    # Base visibility
+    if owner_only:
+        visibility_filter = models.Post.owner_id == current_user_id
+    else:
+        visibility_filter = (models.Post.published) | (
+            models.Post.owner_id == current_user_id
+        )
+
     stmt = (
         select(
             models.Post,
@@ -46,15 +60,25 @@ def get_posts_query(current_user_id: int, search: str = "", owner_only: bool = F
         .options(selectinload(models.Post.owner))
     )
 
-    if owner_only:
-        stmt = stmt.where(models.Post.owner_id == current_user_id)
-    else:
-        stmt = stmt.where(
-            (models.Post.published) | (models.Post.owner_id == current_user_id)
+    filters = [visibility_filter]
+
+    # Search filter
+    if search:
+        search_term = f"%{search}%"
+        filters.append(
+            or_(
+                models.Post.title.ilike(search_term),
+                models.Post.content.ilike(search_term),
+            )
         )
 
-    if search:
-        stmt = stmt.where(models.Post.title.contains(search))
+    # Date filter
+    if start_date:
+        filters.append(models.Post.created_at >= start_date)
+    if end_date:
+        filters.append(models.Post.created_at <= end_date)
+
+    stmt = stmt.where(and_(*filters))
 
     return stmt.group_by(models.Post.id).order_by(desc(models.Post.created_at))
 
@@ -79,14 +103,12 @@ async def get_posts(
     limit: int = 50,
     skip: int = 0,
     search: Optional[str] = "",
+    start_date: Optional[datetime] = None,
+    end_date: Optional[datetime] = None,
 ):
-    """
-    Fetch posts with pagination:
-    - `limit`: number of posts to fetch
-    - `skip`: number of posts to skip (offset)
-    - `search`: optional search string
-    """
-    stmt = get_posts_query(current_user.id, search)
+    stmt = get_posts_query(
+        current_user.id, search, start_date=start_date, end_date=end_date
+    )
     posts = await execute_post_query(db, stmt, limit, skip)
     return [format_post_with_votes(row) for row in posts]
 
