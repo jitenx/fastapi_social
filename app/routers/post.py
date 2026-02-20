@@ -39,6 +39,7 @@ def get_posts_query(
     owner_only: bool = False,
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
+    sort: str = "newest",  # 👈 ADD THIS
 ):
     # Base visibility
     if owner_only:
@@ -80,7 +81,20 @@ def get_posts_query(
 
     stmt = stmt.where(and_(*filters))
 
-    return stmt.group_by(models.Post.id).order_by(desc(models.Post.created_at))
+    stmt = stmt.group_by(models.Post.id)
+
+    # -------------------- SORTING --------------------
+    if sort == "newest":
+        stmt = stmt.order_by(desc(models.Post.created_at))
+    elif sort == "oldest":
+        stmt = stmt.order_by(models.Post.created_at.asc())
+    elif sort == "popularity":
+        stmt = stmt.order_by(desc(func.count(models.Vote.post_id)))
+    else:
+        # fallback safety
+        stmt = stmt.order_by(desc(models.Post.created_at))
+
+    return stmt
 
 
 async def execute_post_query(
@@ -105,9 +119,14 @@ async def get_posts(
     search: Optional[str] = "",
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
+    sort: str = "newest",
 ):
     stmt = get_posts_query(
-        current_user.id, search, start_date=start_date, end_date=end_date
+        current_user.id,
+        search,
+        start_date=start_date,
+        end_date=end_date,
+        sort=sort,
     )
     posts = await execute_post_query(db, stmt, limit, skip)
     return [format_post_with_votes(row) for row in posts]
@@ -120,8 +139,14 @@ async def get_my_posts(
     limit: int = 50,
     skip: int = 0,
     search: Optional[str] = "",
+    sort: str = "newest",
 ):
-    stmt = get_posts_query(current_user.id, search, owner_only=True)
+    stmt = get_posts_query(
+        current_user.id,
+        search,
+        owner_only=True,
+        sort=sort,
+    )
     posts = await execute_post_query(db, stmt, limit, skip)
     return [format_post_with_votes(row) for row in posts]
 
