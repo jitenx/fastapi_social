@@ -1,13 +1,14 @@
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select, func, desc
+from sqlalchemy import and_, desc, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from sqlalchemy import or_, and_
+
+import app.auth.oauth2 as oauth2
 import app.models.models as models
 import app.schemas.schemas as schemas
-import app.auth.oauth2 as oauth2
 from app.database.database import get_async_db
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
@@ -35,7 +36,7 @@ def check_post_owner(post, current_user):
 
 def get_posts_query(
     current_user_id: int,
-    search: str = "",
+    search: str | None = "",
     owner_only: bool = False,
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
