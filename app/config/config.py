@@ -2,17 +2,16 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class AppSettings(BaseSettings):
-    database_host: str
-    database_port: int  # Use int for ports
-    database_name: str
-    database_username: str
-    database_password: str
+    database_host: str = "localhost"
+    database_port: int = 5432
+    database_name: str = "mydb"
+    database_username: str = "user"
+    database_password: str = "pass"
+    algorithm: str = "HS256"
+    secret_key: str = "supersecret"
+    access_token_expire_minutes: int = 60
+    database_com: str = "default"
 
-    algorithm: str
-    secret_key: str
-    access_token_expire_minutes: int
-    database_com: str
-    # Config for reading .env
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
