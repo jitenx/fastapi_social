@@ -6,8 +6,5 @@ python-jose[cryptography]
 pydantic-settings
 alembic
 pytest
-ruff
 asyncpg
 aiosqlite
-faker
-fpdf
