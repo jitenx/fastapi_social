@@ -1,13 +1,14 @@
 from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth import oauth2
-from app.utils import utils
 from app.database.database import get_async_db  # async session dependency
 from app.models import models
 from app.schemas import schemas
+from app.utils import utils
 
 router = APIRouter(prefix="/users", tags=["Users"])
 

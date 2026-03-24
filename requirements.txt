@@ -10,3 +10,4 @@ ruff
 asyncpg
 aiosqlite
 faker
+fpdf
